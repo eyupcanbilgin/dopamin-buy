@@ -1,0 +1,377 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum AddressType {
+  HOME
+  WORK
+  FAMILY
+  RANDOM
+}
+
+enum SimulationPaymentMethod {
+  SIMULATED_DOPAMIN_CARD
+  SIMULATED_CASH_ON_DELIVERY
+  COMPLETE_WITHOUT_SPENDING
+}
+
+enum UrgeTrigger {
+  BOREDOM
+  STRESS
+  REWARD_SEEKING
+  SOCIAL_MEDIA
+  SALE_ANXIETY
+  LONELINESS
+  HABIT
+  OTHER
+}
+
+enum SimulationOrderStatus {
+  STARTED
+  COMPLETED
+  PAUSED
+  JOURNALED
+  ABANDONED
+}
+
+enum CartStatus {
+  ACTIVE
+  CONVERTED_TO_SIMULATION
+  CLEARED
+}
+
+enum AdSlotPlacement {
+  HOME
+  SHOP_HOME
+  CATEGORY
+  PRODUCT_DETAIL
+  CART_REVIEW
+  CHECKOUT_SUCCESS
+}
+
+enum ContentPageType {
+  LANDING
+  ETHICS
+  HELP
+  PRIVACY
+  TERMS
+}
+
+model User {
+  id                  String                 @id @default(cuid())
+  email               String?                @unique
+  displayName         String?
+  createdAt           DateTime               @default(now())
+  updatedAt           DateTime               @updatedAt
+
+  sessions            AnonymousSession[]
+  carts               Cart[]
+  simulationOrders    SimulationOrder[]
+  urgeCheckIns        UrgeCheckIn[]
+  urgeJournalEntries  UrgeJournalEntry[]
+  savedMoneyEvents    SavedMoneyEvent[]
+
+  @@index([createdAt])
+}
+
+model AnonymousSession {
+  id                  String                 @id @default(cuid())
+  sessionToken        String                 @unique
+  userId              String?
+  startedAt           DateTime               @default(now())
+  lastSeenAt          DateTime               @default(now())
+  expiresAt           DateTime?
+  createdAt           DateTime               @default(now())
+  updatedAt           DateTime               @updatedAt
+
+  user                User?                  @relation(fields: [userId], references: [id], onDelete: SetNull)
+  carts               Cart[]
+  simulationOrders    SimulationOrder[]
+  urgeCheckIns        UrgeCheckIn[]
+  urgeJournalEntries  UrgeJournalEntry[]
+  savedMoneyEvents    SavedMoneyEvent[]
+
+  @@index([userId])
+  @@index([sessionToken])
+  @@index([expiresAt])
+  @@index([lastSeenAt])
+}
+
+model Category {
+  id          String     @id @default(cuid())
+  name        String
+  slug        String     @unique
+  description String?
+  sortOrder   Int        @default(0)
+  isActive    Boolean    @default(true)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  products    Product[]
+
+  @@index([slug])
+  @@index([isActive, sortOrder])
+}
+
+model Brand {
+  id          String     @id @default(cuid())
+  name        String
+  slug        String     @unique
+  description String?
+  isFictional Boolean    @default(true)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  products    Product[]
+
+  @@index([slug])
+  @@index([name])
+}
+
+model Product {
+  id                  String                 @id @default(cuid())
+  categoryId          String
+  brandId             String
+  name                String
+  slug                String                 @unique
+  description         String
+  shortDescription    String
+  priceCents          Int
+  compareAtPriceCents Int?
+  currency            String                 @default("TRY")
+  dopamineScore       Decimal                @default(4.5) @db.Decimal(3, 1)
+  reviewCount         Int                    @default(0)
+  isActive            Boolean                @default(true)
+  searchKeywords      String?
+  createdAt           DateTime               @default(now())
+  updatedAt           DateTime               @updatedAt
+
+  category            Category               @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  brand               Brand                  @relation(fields: [brandId], references: [id], onDelete: Restrict)
+  images              ProductImage[]
+  cartItems           CartItem[]
+  simulationItems     SimulationOrderItem[]
+
+  @@index([name])
+  @@index([slug])
+  @@index([categoryId])
+  @@index([brandId])
+  @@index([categoryId, isActive])
+  @@index([brandId, isActive])
+  @@index([priceCents])
+  @@index([searchKeywords])
+}
+
+model ProductImage {
+  id          String    @id @default(cuid())
+  productId   String
+  url         String
+  altText     String
+  sortOrder   Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  product     Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([productId])
+  @@index([productId, sortOrder])
+}
+
+model Cart {
+  id              String             @id @default(cuid())
+  userId          String?
+  sessionId       String?
+  status          CartStatus          @default(ACTIVE)
+  currency        String              @default("TRY")
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+
+  user            User?               @relation(fields: [userId], references: [id], onDelete: SetNull)
+  session         AnonymousSession?   @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  items           CartItem[]
+  simulationOrder SimulationOrder?
+
+  @@index([userId])
+  @@index([sessionId])
+  @@index([status])
+  @@index([sessionId, status])
+}
+
+model CartItem {
+  id          String    @id @default(cuid())
+  cartId      String
+  productId   String
+  quantity    Int       @default(1)
+  unitPriceCents Int
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  cart        Cart      @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  product     Product   @relation(fields: [productId], references: [id], onDelete: Restrict)
+
+  @@unique([cartId, productId])
+  @@index([cartId])
+  @@index([productId])
+}
+
+model SimulationOrder {
+  id                          String                   @id @default(cuid())
+  simulationNumber            String                   @unique
+  userId                      String?
+  sessionId                   String?
+  cartId                      String?                  @unique
+  status                      SimulationOrderStatus    @default(STARTED)
+  totalValueCents             Int
+  savedMoneyCents             Int
+  currency                    String                   @default("TRY")
+  addressType                 AddressType?
+  deliveryCity                String?
+  deliveryDistrict            String?
+  generatedFictionalAddress   String?
+  simulationPaymentMethod     SimulationPaymentMethod?
+  urgeScoreBefore             Int?
+  urgeScoreAfter              Int?
+  completedAt                 DateTime?
+  pausedUntil                 DateTime?
+  createdAt                   DateTime                 @default(now())
+  updatedAt                   DateTime                 @updatedAt
+
+  user                        User?                    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  session                     AnonymousSession?        @relation(fields: [sessionId], references: [id], onDelete: SetNull)
+  cart                        Cart?                    @relation(fields: [cartId], references: [id], onDelete: SetNull)
+  items                       SimulationOrderItem[]
+  urgeCheckIns                UrgeCheckIn[]
+  savedMoneyEvents            SavedMoneyEvent[]
+  journalEntries              UrgeJournalEntry[]
+
+  @@index([simulationNumber])
+  @@index([userId])
+  @@index([sessionId])
+  @@index([status])
+  @@index([sessionId, status])
+  @@index([createdAt])
+}
+
+model SimulationOrderItem {
+  id                  String           @id @default(cuid())
+  simulationOrderId   String
+  productId           String?
+  productName         String
+  brandName           String?
+  categoryName        String?
+  quantity            Int              @default(1)
+  unitPriceCents      Int
+  totalPriceCents     Int
+  imageUrl            String?
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
+
+  simulationOrder     SimulationOrder  @relation(fields: [simulationOrderId], references: [id], onDelete: Cascade)
+  product             Product?         @relation(fields: [productId], references: [id], onDelete: SetNull)
+
+  @@index([simulationOrderId])
+  @@index([productId])
+}
+
+model UrgeCheckIn {
+  id                  String             @id @default(cuid())
+  userId              String?
+  sessionId           String?
+  simulationOrderId   String?
+  score               Int
+  trigger             UrgeTrigger?
+  note                String?
+  checkedAt           DateTime           @default(now())
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+
+  user                User?              @relation(fields: [userId], references: [id], onDelete: SetNull)
+  session             AnonymousSession?  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  simulationOrder     SimulationOrder?   @relation(fields: [simulationOrderId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([sessionId])
+  @@index([simulationOrderId])
+  @@index([checkedAt])
+}
+
+model UrgeJournalEntry {
+  id                  String             @id @default(cuid())
+  userId              String?
+  sessionId           String?
+  simulationOrderId   String?
+  trigger             UrgeTrigger?
+  urgeScoreBefore     Int?
+  urgeScoreAfter      Int?
+  savedMoneyCents     Int?
+  reflection          String
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+
+  user                User?              @relation(fields: [userId], references: [id], onDelete: SetNull)
+  session             AnonymousSession?  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  simulationOrder     SimulationOrder?   @relation(fields: [simulationOrderId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([sessionId])
+  @@index([simulationOrderId])
+  @@index([trigger])
+}
+
+model SavedMoneyEvent {
+  id                  String             @id @default(cuid())
+  userId              String?
+  sessionId           String?
+  simulationOrderId   String?
+  amountCents         Int
+  currency            String             @default("TRY")
+  reason              String
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+
+  user                User?              @relation(fields: [userId], references: [id], onDelete: SetNull)
+  session             AnonymousSession?  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  simulationOrder     SimulationOrder?   @relation(fields: [simulationOrderId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([sessionId])
+  @@index([simulationOrderId])
+  @@index([createdAt])
+}
+
+model AdSlot {
+  id          String           @id @default(cuid())
+  placement   AdSlotPlacement
+  slug        String           @unique
+  title       String
+  body        String
+  ctaLabel    String?
+  ctaHref     String?
+  isActive    Boolean          @default(true)
+  sortOrder   Int              @default(0)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  @@index([placement])
+  @@index([isActive, placement])
+}
+
+model ContentPage {
+  id          String           @id @default(cuid())
+  type        ContentPageType
+  slug        String           @unique
+  title       String
+  excerpt     String?
+  body        String
+  isPublished Boolean          @default(true)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  @@index([type])
+  @@index([slug])
+  @@index([isPublished])
+}

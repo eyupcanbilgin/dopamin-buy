@@ -1,0 +1,75 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --navy: 224 48% 13%;
+    --slate: 218 24% 30%;
+    --dopamine: 45 100% 62%;
+    --dopamine-foreground: 224 48% 13%;
+    --violet: 250 69% 62%;
+    --indigo: 235 56% 42%;
+    --saved: 151 55% 35%;
+    --saved-foreground: 0 0% 100%;
+    --warm: 38 46% 96%;
+    --warm-strong: 34 42% 90%;
+    --surface: 0 0% 100%;
+    --surface-subtle: 38 48% 98%;
+    --surface-strong: 236 35% 19%;
+    --background: var(--warm);
+    --foreground: var(--navy);
+    --card: 0 0% 100%;
+    --card-foreground: var(--navy);
+    --popover: 0 0% 100%;
+    --popover-foreground: var(--navy);
+    --primary: var(--violet);
+    --primary-foreground: 0 0% 100%;
+    --secondary: 45 100% 88%;
+    --secondary-foreground: var(--navy);
+    --muted: 38 32% 90%;
+    --muted-foreground: var(--slate);
+    --accent: var(--dopamine);
+    --accent-foreground: var(--dopamine-foreground);
+    --destructive: 0 76% 55%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 36 26% 82%;
+    --input: 36 26% 82%;
+    --ring: var(--violet);
+    --success: var(--saved);
+    --success-foreground: var(--saved-foreground);
+    --calm: 218 39% 34%;
+    --calm-foreground: 0 0% 100%;
+    --radius: 0.5rem;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    background-image:
+      radial-gradient(circle at 18% 0%, hsl(var(--dopamine) / 0.18), transparent 28rem),
+      linear-gradient(180deg, hsl(var(--surface-subtle)), hsl(var(--background)) 28rem);
+  }
+
+  ::selection {
+    background: hsl(var(--dopamine));
+    color: hsl(var(--dopamine-foreground));
+  }
+}
+
+@layer components {
+  .focus-ring {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background;
+  }
+
+  .premium-card {
+    @apply rounded-lg border border-border/80 bg-card shadow-soft;
+  }
+}
