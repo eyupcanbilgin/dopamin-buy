@@ -1,12 +1,17 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, BadgeCheck, HeartPulse, ShieldCheck, Sparkles } from "lucide-react";
 
+import { AdSlot } from "@/components/ad-slot";
 import { CategoryGrid } from "@/components/category-grid";
 import { Reveal } from "@/components/motion/reveal";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { getPublicAdSlot } from "@/lib/ad-server";
+import { getCatalogCategories } from "@/lib/catalog-db";
+import { buildMetadata } from "@/lib/seo";
 
 const principles = [
   {
@@ -26,7 +31,22 @@ const principles = [
   },
 ];
 
-export default function LandingPage() {
+export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = buildMetadata({
+  title: "Dopamin | Alışveriş hissi, gerçek ödeme olmadan",
+  description:
+    "Dopamin alışveriş isteğini Sanal Sipariş akışıyla gerçek para harcamadan tamamlamaya yardımcı olan etik bir simülasyon platformudur.",
+  path: "/",
+  keywords: ["alışveriş hissi", "sanal sipariş", "gerçek ödeme yok"],
+});
+
+export default async function LandingPage() {
+  const [catalogCategories, homeAdSlot] = await Promise.all([
+    getCatalogCategories(),
+    getPublicAdSlot("homepage-banner"),
+  ]);
+
   return (
     <>
       <section className="relative min-h-[76svh] overflow-hidden">
@@ -69,6 +89,16 @@ export default function LandingPage() {
             </div>
           </Reveal>
         </div>
+      </section>
+
+      <section className="container py-6">
+        <AdSlot
+          placement="homepage-banner"
+          pageType="home"
+          variant="banner"
+          slot={homeAdSlot}
+          disableRemoteLoad
+        />
       </section>
 
       <section id="etik-ilkeler" className="container py-16">
@@ -164,7 +194,7 @@ export default function LandingPage() {
             </Link>
           </Button>
         </div>
-        <CategoryGrid />
+        <CategoryGrid items={catalogCategories} />
       </section>
     </>
   );

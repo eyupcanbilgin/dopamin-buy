@@ -15,6 +15,13 @@ export type Product = {
   compareAtPrice?: number;
   rating: number;
   reviewCount: number;
+  dopaminScore?: number;
+  merchantName?: string;
+  simulatedDeliveryEstimate?: string;
+  popularityScore?: number;
+  stockFeelingLabel?: string;
+  campaignLabel?: string;
+  discountPercentage?: number;
   image: string;
   gallery: string[];
   shortDescription: string;

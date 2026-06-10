@@ -1,6 +1,7 @@
 import Link from "next/link";
 
-import { NoRealPaymentBadge, SimulationBadge } from "@/components/badges";
+import { AdSlot } from "@/components/ad-slot";
+import { SimulationBadge } from "@/components/badges";
 import { Container } from "@/components/layout/container";
 import { Separator } from "@/components/ui/separator";
 
@@ -12,12 +13,11 @@ export function Footer() {
           <div>
             <div className="flex flex-wrap gap-2">
               <SimulationBadge />
-              <NoRealPaymentBadge />
             </div>
             <p className="mt-4 text-sm font-semibold text-navy">Dopamin</p>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
-              Alışveriş dürtüsünü gerçek ödeme, gerçek teslimat veya ticari kayıt olmadan
-              tamamlamaya yardımcı olan etik bir simülasyon alanı. Tıbbi tedavi yerine geçmez.
+              Dopamin gerçek ödeme almaz. Sanal Sipariş akışı alışveriş hissini harcama yapmadan
+              kapatmaya yardımcı olur; tıbbi tedavi yerine geçmez.
             </p>
           </div>
           <nav className="grid grid-cols-2 gap-3 text-sm md:justify-self-end" aria-label="Alt bilgi">
@@ -42,12 +42,26 @@ export function Footer() {
             >
               Sanal ödeme
             </Link>
+            <Link
+              className="focus-ring rounded-sm text-muted-foreground hover:text-foreground"
+              href="/yardim"
+            >
+              Yardım / SSS
+            </Link>
+            <Link
+              className="focus-ring rounded-sm text-muted-foreground hover:text-foreground"
+              href="/rehber"
+            >
+              Rehber
+            </Link>
           </nav>
+        </div>
+        <div className="mt-6">
+          <AdSlot placement="footer" pageType="footer" variant="footer" />
         </div>
         <Separator className="my-6" />
         <p className="text-xs text-muted-foreground">
-          Bu ürün yalnızca simülasyondur. Kart numarası, CVV, son kullanma tarihi, kimlik numarası
-          veya açık adres istemez.
+          Dopamin gerçek ödeme almaz. Kart bilgisi, kimlik numarası veya tam açık adres istemez.
         </p>
       </Container>
     </footer>

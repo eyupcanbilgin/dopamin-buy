@@ -3,12 +3,17 @@ import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 
 import { categories } from "@/lib/catalog";
+import type { Category } from "@/lib/catalog";
 import { cn } from "@/lib/utils";
 
-export function CategoryGrid() {
+type CategoryGridProps = {
+  items?: Category[];
+};
+
+export function CategoryGrid({ items = categories }: CategoryGridProps) {
   return (
     <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-      {categories.map((category) => (
+      {items.map((category) => (
         <Link
           key={category.slug}
           href={`/kategori/${category.slug}`}

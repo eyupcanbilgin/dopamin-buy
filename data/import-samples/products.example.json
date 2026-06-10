@@ -1,0 +1,53 @@
+[
+  {
+    "title": "Yetkili JSON Gün Çantası",
+    "category": "Moda",
+    "brand": "Mira Kolektif",
+    "price": 1899.9,
+    "oldPrice": 2299.9,
+    "rating": 4.6,
+    "reviewCount": 184,
+    "merchant": "Partner Demo Feed",
+    "simulatedDeliveryEstimate": "2-3 gün simülasyonu",
+    "popularityScore": 78,
+    "dopaminScore": 4.1,
+    "stockFeelingLabel": "Acele yok",
+    "campaignLabel": "Sanal sepet avantajı",
+    "imageUrl": "https://placehold.co/900x675/F7F1E8/243047/png?text=Gun+Cantasi",
+    "shortDescription": "Günlük düzen hissi veren sanal çanta kaydı."
+  },
+  {
+    "title": "Yetkili JSON Okuma Lambası",
+    "category": "Ev & Yaşam",
+    "brand": "Sora Home",
+    "price": "1249,50",
+    "oldPrice": "1499,90",
+    "rating": 4.4,
+    "reviewCount": 91,
+    "merchant": "Partner Demo Feed",
+    "simulatedDeliveryEstimate": "Rahat teslim simülasyonu",
+    "popularityScore": 67,
+    "dopaminScore": 3.9,
+    "stockFeelingLabel": "Sanal stok",
+    "campaignLabel": "Sakin seçim etiketi",
+    "imageUrl": "https://placehold.co/900x675/F7F1E8/243047/png?text=Okuma+Lambasi",
+    "shortDescription": "Akşam sakinliği için katalog simülasyonu."
+  },
+  {
+    "title": "Yetkili JSON Suluboya Kutusu",
+    "category": "Kitap & Hobi",
+    "brand": "Defterhane",
+    "price": 679,
+    "oldPrice": 799,
+    "rating": 4.3,
+    "reviewCount": 48,
+    "merchant": "Partner Demo Feed",
+    "simulatedDeliveryEstimate": "Hafta içi teslim hissi",
+    "popularityScore": 59,
+    "dopaminScore": 3.8,
+    "stockFeelingLabel": "Baskısız seçim",
+    "campaignLabel": "Harcamadan dene",
+    "imageUrl": "https://placehold.co/900x675/F7F1E8/243047/png?text=Suluboya+Kutusu",
+    "shortDescription": "Yaratıcı mola hissi için sentetik olmayan demo formatı."
+  }
+]

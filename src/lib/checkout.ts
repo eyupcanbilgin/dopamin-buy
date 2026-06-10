@@ -24,7 +24,7 @@ export const checkoutSteps = [
   {
     id: "success",
     label: "Kapanış",
-    href: "/checkout/basarili",
+    href: "/siparis-takip",
   },
 ] as const;
 

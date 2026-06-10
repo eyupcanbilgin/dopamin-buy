@@ -61,3 +61,12 @@ export function NoRealPaymentBadge({ className }: BadgeProps) {
     </Badge>
   );
 }
+
+export function SimulationModeBadge({ className }: BadgeProps) {
+  return (
+    <Badge variant="simulation" className={cn("gap-1.5 whitespace-nowrap", className)}>
+      <BadgeCheck className="h-3.5 w-3.5" aria-hidden="true" />
+      Simülasyon Modu
+    </Badge>
+  );
+}

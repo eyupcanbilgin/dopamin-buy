@@ -11,12 +11,20 @@ import { EmptyState } from "@/components/empty-state";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { products } from "@/lib/catalog";
+import { resolveCartLineProduct } from "@/lib/cart-line-product";
 import { shippingSimulationOptions } from "@/lib/checkout";
 import { shippingSimulationSchema } from "@/lib/schemas";
 import { useCartStore } from "@/store/use-cart-store";
 
 type ShippingSimulationId = (typeof shippingSimulationOptions)[number]["id"];
+
+const shippingOptionIds = new Set<string>(shippingSimulationOptions.map((option) => option.id));
+
+function resolveShippingOptionId(optionId: unknown): ShippingSimulationId {
+  return typeof optionId === "string" && shippingOptionIds.has(optionId)
+    ? (optionId as ShippingSimulationId)
+    : "standard-simulation";
+}
 
 export default function ShippingSimulationPage() {
   const router = useRouter();
@@ -24,8 +32,8 @@ export default function ShippingSimulationPage() {
   const delivery = useCartStore((state) => state.delivery);
   const shipping = useCartStore((state) => state.shipping);
   const setShipping = useCartStore((state) => state.setShipping);
-  const [selectedShipping, setSelectedShipping] = useState<ShippingSimulationId>(
-    shipping?.optionId ?? "standard-simulation",
+  const [selectedShipping, setSelectedShipping] = useState<ShippingSimulationId>(() =>
+    resolveShippingOptionId(shipping?.optionId),
   );
   const [error, setError] = useState("");
 
@@ -33,7 +41,7 @@ export default function ShippingSimulationPage() {
     () =>
       cart
         .map((line) => {
-          const product = products.find((item) => item.id === line.productId);
+          const product = resolveCartLineProduct(line);
           return product ? { product, quantity: line.quantity } : null;
         })
         .filter((line): line is NonNullable<typeof line> => Boolean(line)),

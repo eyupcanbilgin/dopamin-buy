@@ -99,6 +99,8 @@ describe("Cart and Simulation Store", () => {
           productId: "prd-001",
           quantity: 1,
           name: "Test Product",
+          categorySlug: "teknoloji",
+          categoryName: "Teknoloji",
           price: 100,
           image: "/test.jpg",
         },
@@ -107,6 +109,7 @@ describe("Cart and Simulation Store", () => {
       avoidedSpending: 100,
       urgeBefore: 8,
       urgeAfter: null,
+      triggers: ["stress" as const],
       delivery: {
         city: "Ankara",
         district: "Çankaya",
@@ -117,6 +120,9 @@ describe("Cart and Simulation Store", () => {
       payment: { methodId: "simulated-dopamin-card" as const },
       journalEntryAdded: false,
       waitingUntil: null,
+      delayMode: null,
+      cooldownUntil: null,
+      reflection: null,
     };
 
     useCartStore.getState().completeSimulation(mockOrder);
@@ -124,6 +130,7 @@ describe("Cart and Simulation Store", () => {
     const state = useCartStore.getState();
     expect(state.cart).toEqual([]);
     expect(state.latestOrder).toEqual(mockOrder);
+    expect(state.simulationHistory[0]).toEqual(mockOrder);
     expect(state.delivery).toBeNull();
     expect(state.shipping).toBeNull();
     expect(state.payment).toBeNull();

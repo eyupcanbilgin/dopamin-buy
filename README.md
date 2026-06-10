@@ -18,6 +18,7 @@ Bu proje bir ecommerce checkout sistemi değildir. Gerçek ödeme almaz, gerçek
 - Harcamaktan kaçınılan tutar özeti
 - Zustand ile hassas olmayan simülasyon state yönetimi
 - Prisma + PostgreSQL için simülasyon odaklı veri modeli
+- CSV/JSON ve sentetik katalog için admin-only ürün import katmanı
 - Unit/component/e2e test altyapısı
 
 ## Etik sınırlar
@@ -63,6 +64,7 @@ cp .env.example .env
 
 ```bash
 DATABASE_URL="postgresql://postgres:postgres@localhost:5432/dopamin?schema=public"
+DOPAMIN_ADMIN_KEY="yerel-guvenli-admin-anahtari"
 ```
 
 Prisma client üret:
@@ -107,6 +109,59 @@ Seed içeriği:
 - içerik sayfaları
 
 Not: Seed için çalışan bir PostgreSQL veritabanı ve doğru `DATABASE_URL` gerekir.
+
+## Ürün importu
+
+Ürün import katmanı yalnızca yetkili kaynaklar için tasarlanmıştır:
+
+- CSV dosyaları
+- JSON feed dosyaları
+- partner veya affiliate API/feed kaynakları
+- Dopamin tarafından üretilmiş sentetik katalog verisi
+
+Web scraping, koruma atlatma veya izinsiz ürün görseli kullanımı bu projenin kapsamı dışındadır.
+
+Admin arayüzü:
+
+```text
+http://localhost:3000/admin/import
+```
+
+API route:
+
+```text
+POST /api/admin/import-products
+Header: x-dopamin-admin-key: <DOPAMIN_ADMIN_KEY>
+```
+
+Örnek import dosyaları:
+
+- `data/import-samples/products.example.csv`
+- `data/import-samples/products.example.json`
+
+Desteklenen import akışları:
+
+- CSV yükleme
+- JSON yapıştırma
+- deterministik seed ile 10.000 ürüne kadar sentetik katalog üretimi
+- 12 kategorilik Dopamin taksonomisini yeniden doldurma
+- sentetik demo kataloğunu güvenli şekilde sıfırlama
+
+Import raporu toplam satır, içe aktarılan satır, atlanan satır, doğrulama hataları ve tekrar sayısını gösterir. Fiyatlar veritabanında integer kuruş olarak saklanır.
+
+Sentetik katalog motoru:
+
+- gerçek marka, gerçek ürün başlığı veya ecommerce sitesinden kopyalanmış veri kullanmaz
+- kategori bazlı kurgusal marka üretir
+- Türkçe marketplace stilinde ürün adları oluşturur
+- eski fiyat, sanal kampanya etiketi, yorum sayısı, merchant adı, teslimat simülasyonu, popülerlik, dopamin skoru ve baskısız stok hissi üretir
+- görseller için güvenli placeholder URL'leri kullanır
+
+Admin hızlı aksiyonları:
+
+- `10.000 Ürün Oluştur`
+- `Kategorileri Yeniden Doldur`
+- `Demo Kataloğu Sıfırla`
 
 ## Kontroller
 

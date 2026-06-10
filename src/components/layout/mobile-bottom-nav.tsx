@@ -2,16 +2,17 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, ShoppingBag, Sparkles, Store } from "lucide-react";
+import { BarChart3, Home, ShoppingBag, Sparkles, Store } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { useCartStore } from "@/store/use-cart-store";
 
 const items = [
-  { href: "/", label: "Ana", icon: Home },
-  { href: "/shop", label: "Keşfet", icon: Store },
+  { href: "/shop", label: "Ana", icon: Home },
+  { href: "/shop#kategoriler", label: "Keşfet", icon: Store },
   { href: "/sepet", label: "Sepet", icon: ShoppingBag },
-  { href: "/checkout", label: "Sanal", icon: Sparkles },
+  { href: "/checkout", label: "Akış", icon: Sparkles },
+  { href: "/dashboard", label: "Panel", icon: BarChart3 },
 ];
 
 export function MobileBottomNav() {
@@ -25,11 +26,15 @@ export function MobileBottomNav() {
       aria-label="Mobil hızlı navigasyon"
       className="fixed inset-x-0 bottom-0 z-50 border-t bg-surface/94 px-2 pb-[max(env(safe-area-inset-bottom),0.5rem)] pt-2 shadow-soft backdrop-blur-xl md:hidden"
     >
-      <div className="mx-auto grid max-w-md grid-cols-4 gap-1">
+      <div className="mx-auto grid max-w-md grid-cols-5 gap-1">
         {items.map((item) => {
           const Icon = item.icon;
           const active =
-            item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
+            item.href === "/shop#kategoriler"
+              ? false
+              : item.href === "/shop"
+                ? pathname === "/shop"
+                : pathname.startsWith(item.href);
 
           return (
             <Link
@@ -52,9 +57,7 @@ export function MobileBottomNav() {
           );
         })}
       </div>
-      <span className="sr-only">
-        Dopamin mobil menüsü gerçek alışveriş işlemi başlatmaz.
-      </span>
+      <span className="sr-only">Dopamin mobil menüsü Simülasyon Modu içinde çalışır.</span>
     </nav>
   );
 }

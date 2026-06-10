@@ -25,6 +25,11 @@ enum UrgeTrigger {
   REWARD_SEEKING
   SOCIAL_MEDIA
   SALE_ANXIETY
+  LATE_NIGHT
+  DISCOUNT_FEAR
+  SELF_REWARD
+  SALARY_DAY
+  SADNESS
   LONELINESS
   HABIT
   OTHER
@@ -51,6 +56,11 @@ enum AdSlotPlacement {
   PRODUCT_DETAIL
   CART_REVIEW
   CHECKOUT_SUCCESS
+  HOMEPAGE_BANNER
+  CATEGORY_MID_FEED
+  SIDEBAR_DESKTOP
+  FOOTER
+  GUIDE_INLINE
 }
 
 enum ContentPageType {
@@ -143,8 +153,15 @@ model Product {
   priceCents          Int
   compareAtPriceCents Int?
   currency            String                 @default("TRY")
+  rating              Decimal                @default(4.4) @db.Decimal(2, 1)
   dopamineScore       Decimal                @default(4.5) @db.Decimal(3, 1)
   reviewCount         Int                    @default(0)
+  merchantName        String?
+  simulatedDeliveryEstimate String?
+  popularityScore     Int                    @default(50)
+  stockFeelingLabel   String?
+  campaignLabel       String?
+  catalogSource       String                 @default("import")
   isActive            Boolean                @default(true)
   searchKeywords      String?
   createdAt           DateTime               @default(now())
@@ -163,6 +180,8 @@ model Product {
   @@index([categoryId, isActive])
   @@index([brandId, isActive])
   @@index([priceCents])
+  @@index([catalogSource])
+  @@index([popularityScore])
   @@index([searchKeywords])
 }
 
@@ -179,6 +198,40 @@ model ProductImage {
 
   @@index([productId])
   @@index([productId, sortOrder])
+}
+
+model ProductImportHistory {
+  id              String    @id @default(cuid())
+  source          String
+  provider        String
+  totalRows       Int       @default(0)
+  importedCount   Int       @default(0)
+  skippedCount    Int       @default(0)
+  duplicateCount  Int       @default(0)
+  errors          Json?
+  metadata        Json?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([source])
+  @@index([provider])
+  @@index([createdAt])
+}
+
+model AdminAuditLog {
+  id          String    @id @default(cuid())
+  action      String
+  entityType  String
+  entityId    String?
+  summary     String
+  metadata    Json?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([action])
+  @@index([entityType])
+  @@index([entityId])
+  @@index([createdAt])
 }
 
 model Cart {
@@ -347,10 +400,14 @@ model AdSlot {
   id          String           @id @default(cuid())
   placement   AdSlotPlacement
   slug        String           @unique
+  name        String           @default("")
   title       String
   body        String
+  label       String           @default("Sponsorlu")
+  sponsorName String?
   ctaLabel    String?
   ctaHref     String?
+  frequencyCap Int             @default(3)
   isActive    Boolean          @default(true)
   sortOrder   Int              @default(0)
   createdAt   DateTime         @default(now())
@@ -358,6 +415,7 @@ model AdSlot {
 
   @@index([placement])
   @@index([isActive, placement])
+  @@index([placement, isActive, sortOrder])
 }
 
 model ContentPage {

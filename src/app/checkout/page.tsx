@@ -7,20 +7,23 @@ import { ArrowRight } from "lucide-react";
 import { CheckoutCartList } from "@/components/checkout/checkout-cart-list";
 import { CheckoutEmptyGuard } from "@/components/checkout/checkout-empty-guard";
 import { CheckoutStepShell } from "@/components/checkout/checkout-step-shell";
+import { TriggerSelector } from "@/components/urge/trigger-selector";
 import { UrgeCheckIn } from "@/components/urge-check-in";
 import { Button } from "@/components/ui/button";
-import { products } from "@/lib/catalog";
+import { resolveCartLineProduct } from "@/lib/cart-line-product";
 import { useCartStore } from "@/store/use-cart-store";
 
 export default function CheckoutPage() {
   const cart = useCartStore((state) => state.cart);
   const urgeBefore = useCartStore((state) => state.urgeBefore);
+  const urgeTriggers = useCartStore((state) => state.urgeTriggers);
+  const setUrgeTriggers = useCartStore((state) => state.setUrgeTriggers);
 
   const lines = useMemo(
     () =>
       cart
         .map((line) => {
-          const product = products.find((item) => item.id === line.productId);
+          const product = resolveCartLineProduct(line);
           return product ? { product, quantity: line.quantity } : null;
         })
         .filter((line): line is NonNullable<typeof line> => Boolean(line)),
@@ -43,11 +46,12 @@ export default function CheckoutPage() {
       >
         <div className="space-y-5">
           <CheckoutCartList lines={lines} />
-          <UrgeCheckIn mode="before" />
+          <UrgeCheckIn mode="before" title="Şu an alışveriş isteğin kaç / 10?" />
+          <TriggerSelector value={urgeTriggers} onChange={setUrgeTriggers} />
           <div className="premium-card p-4">
             <p className="text-sm leading-6 text-muted-foreground">
-              Devam etmek için dürtü seviyeni seç. Bu puan kapanış ekranında değişimi görmene
-              yardımcı olur ve ödeme bilgisiyle ilişkili değildir.
+              Devam etmek için dürtü seviyeni seç. Tetikleyici etiketleri isteğe bağlıdır; kapanış
+              ekranında ve panelde kendi alışveriş ritmini daha net görmene yardım eder.
             </p>
             <div className="mt-4 flex justify-end">
               {urgeBefore ? (

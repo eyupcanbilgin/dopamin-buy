@@ -1,119 +1,224 @@
-import Image from "next/image";
+import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, ShieldCheck, SlidersHorizontal } from "lucide-react";
+import { ArrowRight, HeartHandshake, Moon, ShoppingBag, WalletCards } from "lucide-react";
 
 import { AdSlot } from "@/components/ad-slot";
 import { CategoryGrid } from "@/components/category-grid";
-import { Reveal } from "@/components/motion/reveal";
-import { ProductCard } from "@/components/product-card";
+import { ProductListing } from "@/components/product/product-listing";
 import { SectionHeader } from "@/components/section-header";
-import { UrgeCheckIn } from "@/components/urge-check-in";
-import { Badge } from "@/components/ui/badge";
+import { JsonLd } from "@/components/seo/json-ld";
+import { HeroCarousel } from "@/components/shop/hero-carousel";
+import { ProductRail } from "@/components/shop/product-rail";
 import { Button } from "@/components/ui/button";
-import { getFeaturedProducts, products } from "@/lib/catalog";
+import { BrowsingUrgeCheckIn } from "@/components/urge/browsing-urge-check-in";
+import { getPublicAdSlot } from "@/lib/ad-server";
+import {
+  getCatalogCategories,
+  getCatalogFeaturedProducts,
+  getCatalogProducts,
+} from "@/lib/catalog-db";
+import { buildBreadcrumbJsonLd, buildCategoryCollectionJsonLd, buildMetadata } from "@/lib/seo";
 
-export const metadata = {
-  title: "Sanal Mağaza",
-};
+export const metadata: Metadata = buildMetadata({
+  title: "Sanal Mağaza | Harcamadan keşfet",
+  description:
+    "Dopamin Sanal Mağaza ürünleri keşfetme, sepete ekleme ve Sanal Sipariş hissini gerçek ödeme veya teslimat olmadan deneyimletir.",
+  path: "/shop",
+  keywords: ["sanal mağaza", "sanal sepet", "ürün simülasyonu"],
+});
 
-export default function ShopPage() {
-  const featured = getFeaturedProducts();
+export const dynamic = "force-dynamic";
+
+export default async function ShopPage() {
+  const [featured, catalogProducts, catalogCategories, homepageAdSlot, sidebarAdSlot] = await Promise.all([
+    getCatalogFeaturedProducts(),
+    getCatalogProducts(240),
+    getCatalogCategories(),
+    getPublicAdSlot("homepage-banner"),
+    getPublicAdSlot("sidebar-desktop"),
+  ]);
+  const trendingProducts = [...catalogProducts]
+    .sort((a, b) => (b.popularityScore ?? b.reviewCount) - (a.popularityScore ?? a.reviewCount))
+    .slice(0, 8);
+  const priceDropProducts = catalogProducts
+    .filter((product) => product.compareAtPrice)
+    .sort((a, b) => (b.discountPercentage ?? 0) - (a.discountPercentage ?? 0))
+    .slice(0, 8);
+  const mostAddedProducts = [...catalogProducts]
+    .sort((a, b) => b.reviewCount - a.reviewCount)
+    .slice(0, 8);
+  const lateNightProducts = catalogProducts
+    .filter((product) =>
+      ["teknoloji", "kozmetik-bakim", "ev-yasam", "kitap-hobi", "kirtasiye"].includes(
+        product.category,
+      ),
+    )
+    .slice(0, 8);
 
   return (
     <>
-      <section className="border-b bg-card/70">
-        <div className="container grid gap-8 py-8 lg:grid-cols-[0.92fr_1.08fr] lg:items-center">
-          <Reveal className="space-y-5">
-            <Badge variant="calm">Premium sanal alışveriş</Badge>
-            <h1 className="max-w-2xl text-4xl font-bold leading-tight tracking-normal sm:text-5xl">
-              Sepete ekle, hissi tamamla, gerçek ödeme yapma.
-            </h1>
-            <p className="max-w-xl text-base leading-7 text-muted-foreground">
-              Gerçek ecommerce akışı gibi görünür; fakat sipariş, kargo ve ödeme tamamen
-              simülasyondur. Acele ettiren kampanya ya da geri sayım yok.
-            </p>
-            <div className="flex flex-col gap-3 sm:flex-row">
-              <Button asChild size="lg">
-                <Link href="#urunler">
-                  Ürünleri keşfet
-                  <ArrowRight className="h-5 w-5" aria-hidden="true" />
-                </Link>
-              </Button>
-              <Button asChild size="lg" variant="outline">
-                <Link href="/sepet">Sanal sepet</Link>
-              </Button>
-            </div>
-          </Reveal>
-
-          <Reveal delay={0.12}>
-            <div className="grid grid-cols-2 gap-3">
-              {featured.slice(0, 4).map((product, index) => (
-                <Link
-                  key={product.id}
-                  href={`/urun/${product.slug}`}
-                  className="focus-ring group relative aspect-[4/3] overflow-hidden rounded-lg border bg-muted shadow-sm"
-                >
-                  <Image
-                    src={product.image}
-                    alt={product.name}
-                    fill
-                    priority={index < 2}
-                    sizes="(min-width: 1024px) 25vw, 50vw"
-                    className="object-cover transition duration-500 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/62 to-transparent p-3">
-                    <p className="text-sm font-semibold text-white">{product.name}</p>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </Reveal>
-        </div>
+      <JsonLd
+        data={[
+          buildBreadcrumbJsonLd([
+            { name: "Dopamin", path: "/" },
+            { name: "Sanal Mağaza", path: "/shop" },
+          ]),
+          buildCategoryCollectionJsonLd({
+            name: "Dopamin Sanal Mağaza",
+            description:
+              "Gerçek satış veya teslimat oluşturmayan alışveriş simülasyonu vitrini.",
+            path: "/shop",
+            products: catalogProducts,
+          }),
+        ]}
+      />
+      <HeroCarousel products={featured.length > 0 ? featured : catalogProducts} />
+      <BrowsingUrgeCheckIn />
+      <section className="container py-5">
+        <AdSlot
+          placement="homepage-banner"
+          pageType="shop"
+          variant="banner"
+          slot={homepageAdSlot}
+          disableRemoteLoad
+        />
       </section>
 
-      <section className="container grid gap-6 py-10 lg:grid-cols-[0.72fr_1.28fr]">
-        <UrgeCheckIn mode="before" compact />
-        <div className="rounded-lg border bg-secondary/55 p-5">
-          <div className="flex items-start gap-3">
-            <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-primary" aria-hidden="true" />
-            <div>
-              <h2 className="font-semibold">Etik alışveriş modu açık</h2>
-              <p className="mt-1 text-sm leading-6 text-muted-foreground">
-                Dopamin ürün seçme hissini verir; ancak gerçek ödeme toplamaz, gerçek teslimat
-                planlamaz ve ticari kayıt oluşturmaz.
-              </p>
+      <section className="border-b bg-card">
+        <div className="container grid gap-3 py-5 sm:grid-cols-3">
+          {[
+            {
+              icon: ShoppingBag,
+              title: "Sepete Ekle",
+              text: "Ürünleri seç, sepet ritmini tamamla.",
+            },
+            {
+              icon: WalletCards,
+              title: "Ödeme baskısı yok",
+              text: "Akış, Simülasyon Modu içinde ilerler.",
+            },
+            {
+              icon: HeartHandshake,
+              title: "Sakin kapanış",
+              text: "Korumayı gördüğün net bir final ekranı.",
+            },
+          ].map((item) => (
+            <div key={item.title} className="flex items-start gap-3 rounded-lg bg-background p-4">
+              <span className="flex h-10 w-10 items-center justify-center rounded-md bg-primary/10 text-primary">
+                <item.icon className="h-5 w-5" aria-hidden="true" />
+              </span>
+              <div>
+                <h2 className="text-sm font-bold">{item.title}</h2>
+                <p className="mt-1 text-xs leading-5 text-muted-foreground">{item.text}</p>
+              </div>
             </div>
-          </div>
+          ))}
         </div>
       </section>
 
       <section id="kategoriler" className="container py-6">
         <SectionHeader
           eyebrow="Kategoriler"
-          title="Bugünkü sanal vitrin"
-          description="Kategoriler gerçek stok vaadi taşımaz; sadece seçme hissini güvenli biçimde denemek içindir."
+          title="Hızlı kategori geçişleri"
+          description="Teknolojiden mutfağa, gece bakılacak küçük şeylerden büyük elektroniklere kadar düzenli vitrinler."
           actions={
-            <SlidersHorizontal
-              className="hidden h-5 w-5 text-muted-foreground sm:block"
-              aria-hidden="true"
+            <Button asChild variant="outline">
+              <Link href="#tum-urunler">
+                Ürün listesine in
+                <ArrowRight className="h-4 w-4" aria-hidden="true" />
+              </Link>
+            </Button>
+          }
+        />
+        <CategoryGrid items={catalogCategories} />
+      </section>
+
+      <ProductRail
+        eyebrow="Trend"
+        title="Bugün en çok bakılanlar"
+        description="Popülerlik ve değerlendirme sinyallerine göre dengelenmiş keşif alanı."
+        products={trendingProducts}
+      />
+
+      <ProductRail
+        eyebrow="Fiyat düşüşü hissi"
+        title="Sepette iyi hissettiren fiyatlar"
+        description="Geri sayım veya stok baskısı olmadan, sadece fiyatı yumuşayan ürünler."
+        products={priceDropProducts}
+      />
+
+      <ProductRail
+        eyebrow="Sepete eklenenler"
+        title="Çok seçilen ürünler"
+        description="Kullanıcıların sepet ritmine en sık eşlik eden ürün grupları."
+        products={mostAddedProducts}
+      />
+
+      <section className="container py-10">
+        <div className="grid gap-4 rounded-lg border bg-surface-strong p-5 text-white shadow-soft lg:grid-cols-[0.6fr_1.4fr] lg:items-center">
+          <div>
+            <span className="inline-flex h-11 w-11 items-center justify-center rounded-md bg-white/10 text-dopamine">
+              <Moon className="h-5 w-5" aria-hidden="true" />
+            </span>
+            <h2 className="mt-4 text-2xl font-bold tracking-normal">Gece gelen bakma isteği</h2>
+            <p className="mt-2 text-sm leading-6 text-white/72">
+              Teknoloji, bakım, ev ve hobi ürünlerinden oluşan daha sakin bir koleksiyon.
+            </p>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {lateNightProducts.slice(0, 4).map((product) => (
+              <Link
+                key={product.id}
+                href={`/urun/${product.slug}`}
+                className="focus-ring rounded-lg border border-white/14 bg-white/10 p-3 transition hover:bg-white/14"
+              >
+                <p className="line-clamp-2 text-sm font-semibold">{product.name}</p>
+                <p className="mt-2 text-xs text-white/68">{product.campaignLabel ?? "Sakin seçim"}</p>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="container py-10">
+        <SectionHeader
+          eyebrow="Topluluk ritmi"
+          title="Bugün harcamadan tamamlanan sepetler"
+          description="Dopamin’de kapanış, ürünü seçme hissini bütçe etkisi olmadan bitirmeye odaklanır."
+        />
+        <div className="grid gap-3 sm:grid-cols-3">
+          {[
+            ["1.284", "tamamlanan sepet"],
+            ["₺842K", "korunan sepet değeri"],
+            ["7 dk", "ortalama düşünme molası"],
+          ].map(([value, label]) => (
+            <div key={label} className="rounded-lg border bg-card p-5 shadow-sm">
+              <p className="text-3xl font-bold text-navy">{value}</p>
+              <p className="mt-1 text-sm text-muted-foreground">{label}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section id="tum-urunler" className="container py-12">
+        <SectionHeader
+          eyebrow="Tüm ürünler"
+          title="Katalogda gez"
+          description={`${catalogProducts.length.toLocaleString("tr-TR")} ürün gösteriliyor. Filtrele, sırala, listeye al veya sepete ekle.`}
+        />
+        <ProductListing
+          products={catalogProducts}
+          categories={catalogCategories}
+          sidebarAdSlot={
+            <AdSlot
+              placement="sidebar-desktop"
+              pageType="shop"
+              variant="sidebar"
+              slot={sidebarAdSlot}
+              disableRemoteLoad
             />
           }
         />
-        <CategoryGrid />
-      </section>
-
-      <section id="urunler" className="container py-12">
-        <SectionHeader
-          eyebrow="Sanal ürünler"
-          title="Öne çıkan keşifler"
-          description={`${products.length} ürün, mock veri. Hiçbiri gerçek stok, gerçek indirim veya satış vaadi değildir.`}
-        />
-        <AdSlot className="mb-6" />
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {products.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
       </section>
     </>
   );

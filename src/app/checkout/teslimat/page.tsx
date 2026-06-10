@@ -9,7 +9,7 @@ import { CheckoutStepShell } from "@/components/checkout/checkout-step-shell";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { products } from "@/lib/catalog";
+import { resolveCartLineProduct } from "@/lib/cart-line-product";
 import {
   addressTypeOptions,
   cityDistricts,
@@ -36,7 +36,7 @@ export default function DeliverySimulationPage() {
     () =>
       cart
         .map((line) => {
-          const product = products.find((item) => item.id === line.productId);
+          const product = resolveCartLineProduct(line);
           return product ? { product, quantity: line.quantity } : null;
         })
         .filter((line): line is NonNullable<typeof line> => Boolean(line)),

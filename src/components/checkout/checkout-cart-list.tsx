@@ -7,10 +7,10 @@ import { Minus, Plus, Trash2 } from "lucide-react";
 import { PriceDisplay } from "@/components/price-display";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import type { Product } from "@/lib/catalog";
+import type { CartProductSnapshot } from "@/lib/cart-types";
 
 export type CheckoutCartLine = {
-  product: Product;
+  product: CartProductSnapshot;
   quantity: number;
 };
 

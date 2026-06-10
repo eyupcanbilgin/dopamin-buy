@@ -10,7 +10,7 @@ import { SavedMoneySummary } from "@/components/saved-money-summary";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
-import { products } from "@/lib/catalog";
+import { resolveCartLineProduct } from "@/lib/cart-line-product";
 import { formatCurrency } from "@/lib/format";
 import { useCartStore } from "@/store/use-cart-store";
 
@@ -23,7 +23,7 @@ export default function CartPage() {
 
   const lines = cart
     .map((line) => {
-      const product = products.find((item) => item.id === line.productId);
+      const product = resolveCartLineProduct(line);
       return product ? { ...line, product } : null;
     })
     .filter((line): line is NonNullable<typeof line> => Boolean(line));
@@ -48,11 +48,11 @@ export default function CartPage() {
     return (
       <main className="container py-12">
         <EmptyState
-          title="Sanal sepetin boş"
-          description="Birkaç ürün seçerek alışveriş dürtüsünü gerçek para harcamadan tamamlayabilirsin."
+          title="Sepetin boş"
+          description="Beğendiğin ürünleri sepete ekleyerek alışveriş akışını harcama yapmadan tamamlayabilirsin."
           action={
             <Button asChild size="lg">
-              <Link href="/shop">Sanal mağazaya dön</Link>
+              <Link href="/shop">Mağazaya dön</Link>
             </Button>
           }
         />
@@ -64,11 +64,10 @@ export default function CartPage() {
     <main className="container py-8">
       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="text-sm font-semibold text-primary">Sanal Sepet</p>
-          <h1 className="mt-2 text-3xl font-bold tracking-normal">Seçimlerini tamamla</h1>
+          <p className="text-sm font-semibold text-primary">Sepetim</p>
+          <h1 className="mt-2 text-3xl font-bold tracking-normal">Seçimlerini gözden geçir</h1>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
-            Bu sepet ticari kayıt oluşturmaz. Sonraki adımda teslimat ve ödeme sadece Simülasyon
-            olarak seçilir.
+            Ürünleri düzenle, tutarı gör ve hazır olduğunda Sanal Sipariş akışına geç.
           </p>
         </div>
         <Button type="button" variant="ghost" onClick={clearCart}>
@@ -147,7 +146,7 @@ export default function CartPage() {
           <CartSummary subtotal={subtotal} itemCount={itemCount} />
           <SavedMoneySummary amount={subtotal} label="Simülasyon tamamlanırsa korunacak tutar" />
           <Button asChild size="lg" className="w-full">
-            <Link href="/checkout">Sanal Sipariş akışına geç</Link>
+            <Link href="/checkout">Sanal Siparişi Tamamla</Link>
           </Button>
         </aside>
       </div>

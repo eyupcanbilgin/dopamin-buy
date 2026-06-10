@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { HeartPulse, ShoppingBag } from "lucide-react";
+import { BarChart3, HeartPulse, ShoppingBag } from "lucide-react";
 
-import { NoRealPaymentBadge } from "@/components/badges";
+import { SimulationModeBadge } from "@/components/badges";
 import { Container } from "@/components/layout/container";
 import { Button } from "@/components/ui/button";
 import { useCartStore } from "@/store/use-cart-store";
@@ -17,9 +17,9 @@ export function Header() {
     <header className="sticky top-0 z-40 border-b border-border/70 bg-surface/90 backdrop-blur-xl">
       <Container className="flex h-16 items-center justify-between gap-4">
         <Link
-          href="/"
+          href="/shop"
           className="focus-ring flex items-center gap-2 rounded-md"
-          aria-label="Dopamin ana sayfa"
+          aria-label="Dopamin mağaza ana sayfa"
         >
           <span className="flex h-9 w-9 items-center justify-center rounded-md bg-primary text-primary-foreground shadow-glow">
             <HeartPulse className="h-5 w-5" aria-hidden="true" />
@@ -35,12 +35,21 @@ export function Header() {
             <Link href="/shop#kategoriler">Kategoriler</Link>
           </Button>
           <Button variant="ghost" asChild>
-            <Link href="/checkout">Simülasyon</Link>
+            <Link href="/sepet">Sepetim</Link>
+          </Button>
+          <Button variant="ghost" asChild>
+            <Link href="/dashboard">
+              <BarChart3 className="h-4 w-4" aria-hidden="true" />
+              Panel
+            </Link>
+          </Button>
+          <Button variant="ghost" asChild>
+            <Link href="/yardim">Yardım</Link>
           </Button>
         </nav>
 
         <div className="flex items-center gap-2">
-          <NoRealPaymentBadge className="hidden sm:inline-flex" />
+          <SimulationModeBadge />
           <Button variant="outline" size="icon" asChild aria-label="Sepeti görüntüle">
             <Link href="/sepet" className="relative">
               <ShoppingBag className="h-5 w-5" aria-hidden="true" />

@@ -2,10 +2,22 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { BookHeart, CheckCircle2, Clock, RotateCcw, ShieldCheck, Smile } from "lucide-react";
+import {
+  BarChart3,
+  BookHeart,
+  CheckCircle2,
+  Clock,
+  RotateCcw,
+  ShieldCheck,
+  Smile,
+  Truck,
+} from "lucide-react";
 
 import { EmptyState } from "@/components/empty-state";
 import { SavedMoneySummary } from "@/components/saved-money-summary";
+import { CravingCooldown } from "@/components/urge/craving-cooldown";
+import { DelayActions } from "@/components/urge/delay-actions";
+import { ReflectionCard } from "@/components/urge/reflection-card";
 import { UrgeCheckIn } from "@/components/urge-check-in";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -62,7 +74,7 @@ export default function CheckoutSuccessPage() {
   }
 
   function handleWaitClick() {
-    setLatestOrderWaitingUntil(new Date(Date.now() + 10 * 60 * 1000).toISOString());
+    setLatestOrderWaitingUntil(new Date(Date.now() + 10 * 60 * 1000).toISOString(), "ten-minutes");
   }
 
   return (
@@ -77,7 +89,7 @@ export default function CheckoutSuccessPage() {
               Sanal Sipariş tamamlandı.
             </h1>
             <p className="mt-3 max-w-2xl text-base leading-7 text-muted-foreground">
-              Alışveriş döngüsünü para harcamadan tamamladın. Gerçek ödeme alınmadı, teslimat
+              Gerçek para harcamadan sipariş hissini tamamladın. Ödeme alınmadı, teslimat
               hazırlanmadı, mağaza işlemi başlatılmadı.
             </p>
             <div className="mt-6 grid gap-3 rounded-lg bg-secondary/55 p-4 text-sm sm:grid-cols-3">
@@ -120,7 +132,7 @@ export default function CheckoutSuccessPage() {
 
       <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_360px]">
         <section className="space-y-5">
-          <UrgeCheckIn mode="after" />
+          <UrgeCheckIn mode="after" title="Şimdi kaç / 10?" />
           <Card>
             <CardHeader>
               <CardTitle>Dürtü kapanışı</CardTitle>
@@ -165,6 +177,18 @@ export default function CheckoutSuccessPage() {
                 <BookHeart className="h-4 w-4" aria-hidden="true" />
                 Dürtü Günlüğüne Ekle
               </Button>
+              <Button asChild variant="outline">
+                <Link href="/siparis-takip">
+                  <Truck className="h-4 w-4" aria-hidden="true" />
+                  Sanal Siparişi Takip Et
+                </Link>
+              </Button>
+              <Button asChild variant="outline">
+                <Link href="/dashboard">
+                  <BarChart3 className="h-4 w-4" aria-hidden="true" />
+                  Panele Bak
+                </Link>
+              </Button>
               <Button asChild variant="outline" onClick={resetSession}>
                 <Link href="/shop">
                   <RotateCcw className="h-4 w-4" aria-hidden="true" />
@@ -173,6 +197,11 @@ export default function CheckoutSuccessPage() {
               </Button>
             </CardContent>
           </Card>
+          <div className="grid gap-4 lg:grid-cols-2">
+            <CravingCooldown />
+            <DelayActions />
+          </div>
+          <ReflectionCard />
           {(waitingUntil || latestOrder.journalEntryAdded) ? (
             <Card>
               <CardContent className="pt-5">

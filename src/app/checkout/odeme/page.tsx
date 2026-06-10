@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { CreditCard, ShieldCheck } from "lucide-react";
 
@@ -11,25 +11,35 @@ import { EmptyState } from "@/components/empty-state";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { products } from "@/lib/catalog";
+import { resolveCartLineProduct } from "@/lib/cart-line-product";
 import { paymentSimulationOptions } from "@/lib/checkout";
 import { paymentSimulationSchema } from "@/lib/schemas";
 import { type SimulatedOrder, useCartStore } from "@/store/use-cart-store";
 
 type PaymentSimulationId = (typeof paymentSimulationOptions)[number]["id"];
 
+const paymentMethodIds = new Set<string>(paymentSimulationOptions.map((option) => option.id));
+
+function resolvePaymentMethodId(methodId: unknown): PaymentSimulationId {
+  return typeof methodId === "string" && paymentMethodIds.has(methodId)
+    ? (methodId as PaymentSimulationId)
+    : "complete-without-spending";
+}
+
 export default function PaymentSimulationPage() {
   const router = useRouter();
   const cart = useCartStore((state) => state.cart);
   const urgeBefore = useCartStore((state) => state.urgeBefore);
+  const urgeTriggers = useCartStore((state) => state.urgeTriggers);
   const delivery = useCartStore((state) => state.delivery);
   const shipping = useCartStore((state) => state.shipping);
   const payment = useCartStore((state) => state.payment);
+  const latestOrder = useCartStore((state) => state.latestOrder);
   const setPayment = useCartStore((state) => state.setPayment);
   const completeSimulation = useCartStore((state) => state.completeSimulation);
 
-  const [selectedPayment, setSelectedPayment] = useState<PaymentSimulationId>(
-    payment?.methodId ?? "complete-without-spending",
+  const [selectedPayment, setSelectedPayment] = useState<PaymentSimulationId>(() =>
+    resolvePaymentMethodId(payment?.methodId),
   );
   const [simulationConsent, setSimulationConsent] = useState(false);
   const [error, setError] = useState("");
@@ -38,7 +48,7 @@ export default function PaymentSimulationPage() {
     () =>
       cart
         .map((line) => {
-          const product = products.find((item) => item.id === line.productId);
+          const product = resolveCartLineProduct(line);
           return product ? { product, quantity: line.quantity } : null;
         })
         .filter((line): line is NonNullable<typeof line> => Boolean(line)),
@@ -47,6 +57,12 @@ export default function PaymentSimulationPage() {
 
   const itemCount = lines.reduce((total, line) => total + line.quantity, 0);
   const subtotal = lines.reduce((total, line) => total + line.product.price * line.quantity, 0);
+
+  useEffect(() => {
+    if (latestOrder && cart.length === 0) {
+      router.replace("/siparis-takip");
+    }
+  }, [cart.length, latestOrder, router]);
 
   if (!delivery || !shipping) {
     return (
@@ -96,6 +112,8 @@ export default function PaymentSimulationPage() {
         productId: line.product.id,
         quantity: line.quantity,
         name: line.product.name,
+        categorySlug: line.product.categorySlug || "genel",
+        categoryName: line.product.categoryName || "Genel",
         price: line.product.price,
         image: line.product.image,
       })),
@@ -103,15 +121,19 @@ export default function PaymentSimulationPage() {
       avoidedSpending: subtotal,
       urgeBefore,
       urgeAfter: null,
+      triggers: urgeTriggers,
       delivery,
       shipping,
       payment: { methodId: parsed.data.methodId },
       journalEntryAdded: false,
       waitingUntil: null,
+      delayMode: null,
+      cooldownUntil: null,
+      reflection: null,
     };
 
     completeSimulation(order);
-    router.push("/checkout/basarili");
+    router.push("/siparis-takip");
   }
 
   return (

@@ -10,13 +10,13 @@ describe("UrgeCheckIn Component", () => {
 
   it("should render for 'before' mode and display proper title and subtext", () => {
     render(<UrgeCheckIn mode="before" />);
-    expect(screen.getByText("Alışveriş dürtün şu an kaç?")).toBeInTheDocument();
+    expect(screen.getByText("Şu an alışveriş isteğin kaç / 10?")).toBeInTheDocument();
     expect(screen.getByText(/1 sakin, 10 çok güçlü/i)).toBeInTheDocument();
   });
 
   it("should render for 'after' mode and display proper title and subtext", () => {
     render(<UrgeCheckIn mode="after" />);
-    expect(screen.getByText("Simülasyondan sonra dürtün kaç?")).toBeInTheDocument();
+    expect(screen.getByText("Şimdi kaç / 10?")).toBeInTheDocument();
     expect(screen.getByText(/Kapanış hissini fark etmek için/i)).toBeInTheDocument();
   });
 
