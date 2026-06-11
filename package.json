@@ -12,7 +12,9 @@
     "prisma:validate": "prisma validate",
     "prisma:migrate:deploy": "prisma migrate deploy",
     "prisma:db:seed": "prisma db seed",
+    "db:migrate": "prisma migrate deploy",
     "db:seed": "prisma db seed",
+    "db:verify": "tsx prisma/verify.ts",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test"

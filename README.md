@@ -88,19 +88,47 @@ http://localhost:3000
 
 ## Veritabanı
 
+Doply staging akışı PostgreSQL üzerinde migration + seed + doğrulama adımlarını birlikte çalıştırır. Lokal fallback katalog yalnızca geliştirme ve hata toleransı içindir; staging için `npm run db:verify` başarılı olmalıdır.
+
+Gerekli ortam değişkenleri:
+
+```bash
+DATABASE_URL="postgresql://USER:PASSWORD@HOST:PORT/DATABASE?schema=public"
+DOPLY_ADMIN_KEY="uzun-rastgele-staging-admin-anahtari"
+NEXT_PUBLIC_SITE_URL="https://doply.app"
+NEXT_PUBLIC_DOPLY_PREMIUM_NO_ADS="false"
+```
+
+Opsiyonel seed ve doğrulama değişkenleri:
+
+```bash
+DOPLY_SEED_PRODUCT_COUNT="10000"
+DOPLY_SEED_VALUE="doply-staging-2026"
+DOPLY_VERIFY_MIN_PRODUCTS="10000"
+DOPLY_VERIFY_MIN_CATEGORIES="12"
+DOPLY_VERIFY_MIN_BRANDS="1000"
+DOPLY_VERIFY_MIN_IMAGES="10000"
+```
+
 Şema doğrulama:
 
 ```bash
 npm run prisma:validate
 ```
 
-Staging migration deploy:
+Migration deploy:
+
+```bash
+npm run db:migrate
+```
+
+Prisma migration scripti ayni isi yapar ve staging dogrulamasinda da calismasi beklenir:
 
 ```bash
 npm run prisma:migrate:deploy
 ```
 
-Seed çalıştırma:
+10.000 urunluk sentetik demo katalog seed'i:
 
 ```bash
 npm run db:seed
@@ -112,27 +140,36 @@ Alternatif Prisma seed scripti:
 npm run prisma:db:seed
 ```
 
-Staging için gereken temel ortam değişkenleri:
+Katalog ve veritabani sagligi dogrulama:
 
 ```bash
-DATABASE_URL="postgresql://USER:PASSWORD@HOST:PORT/DATABASE?schema=public"
-DOPLY_ADMIN_KEY="uzun-rastgele-staging-admin-anahtari"
-NEXT_PUBLIC_SITE_URL="https://doply.app"
-NEXT_PUBLIC_DOPLY_PREMIUM_NO_ADS="false"
+npm run db:verify
 ```
 
-Staging veritabanı kurulum sırası: PostgreSQL veritabanını oluştur, `DATABASE_URL` değerini ayarla, `npm run prisma:validate` ile şemayı doğrula, `npm run prisma:migrate:deploy` ile migration dosyalarını uygula, ardından gerekiyorsa `npm run db:seed` veya admin import paneliyle katalog verisini yükle.
+Beklenen minimum sonuclar:
 
-Seed içeriği:
+- aktif urun: en az 10.000
+- aktif kategori: en az 12
+- marka: en az 1.000
+- urun gorseli: en az 10.000
+- tekrar eden slug: 0
+- eksik/gecersiz fiyat: 0
+- kategori iliskisi eksik urun: 0
+- gorselsiz aktif urun: 0
 
-- 10 kategori
-- 20 kurgusal marka
-- 100 Türkçe kurgusal ürün
-- placeholder ürün görselleri
-- etik ad slotları
-- içerik sayfaları
+Staging kurulum sirasi:
 
-Not: Seed için çalışan bir PostgreSQL veritabanı ve doğru `DATABASE_URL` gerekir.
+```bash
+npm install
+npm run prisma:generate
+npm run prisma:validate
+npm run db:migrate
+npm run db:seed
+npm run db:verify
+npm run build
+```
+
+Seed 12 kategorilik Doply taksonomisini, binlerce kurgusal markayi, varsayilan olarak 10.000 Turkce sentetik urunu, guvenli placeholder urun gorsellerini, etik ad slotlarini ve temel icerik sayfalarini olusturur. Seed deterministiktir; ayni `DOPLY_SEED_VALUE` ile ayni katalog yeniden uretilebilir.
 
 ## Ürün importu
 
