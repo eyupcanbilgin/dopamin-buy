@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
 
 import { adPageTypeOptions, adPlacementOptions } from "@/lib/ad-config";
+import { publicMutationRateLimit, rateLimitRequest } from "@/lib/rate-limit";
 
 const adAnalyticsSchema = z.object({
   event: z.enum(["impression", "click"]),
@@ -15,6 +16,12 @@ const adAnalyticsSchema = z.object({
 });
 
 export async function POST(request: NextRequest) {
+  const rateLimitError = rateLimitRequest(request, publicMutationRateLimit);
+
+  if (rateLimitError) {
+    return rateLimitError;
+  }
+
   const payload = await request.json().catch(() => null);
   const parsed = adAnalyticsSchema.safeParse(payload);
 
@@ -24,7 +31,7 @@ export async function POST(request: NextRequest) {
 
   // Privacy-friendly MVP: validate event shape, intentionally avoid user IDs, IPs,
   // user agent strings, precise timestamps, cookies, or session identifiers.
-  console.info("dopamin_ad_event", {
+  console.info("doply_ad_event", {
     event: parsed.data.event,
     placement: parsed.data.placement,
     pageType: parsed.data.pageType,

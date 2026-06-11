@@ -133,6 +133,7 @@ export default function PaymentSimulationPage() {
     };
 
     completeSimulation(order);
+    void logSimulationOrder(order);
     router.push("/siparis-takip");
   }
 
@@ -147,14 +148,14 @@ export default function PaymentSimulationPage() {
         backHref="/checkout/kargo"
         sidebarNote="Bu sayfada ödeme bilgisi girilemez. Seçimlerin yalnızca Simülasyon durumudur."
       >
-        <section className="premium-card p-5">
-          <div className="rounded-lg border border-dopamine/40 bg-dopamine/12 p-4">
+        <section className="premium-card p-5 sm:p-6">
+          <div className="rounded-lg border border-dopamine/40 bg-dopamine/12 p-4 shadow-sm">
             <p className="flex items-center gap-2 text-sm font-semibold text-navy">
               <ShieldCheck className="h-4 w-4 text-primary" aria-hidden="true" />
               Kart bilgisi alanı bilinçli olarak yok
             </p>
             <p className="mt-2 text-sm leading-6 text-slate">
-              Dopamin ödeme verisi toplamaz. Aşağıdaki seçenekler yalnızca Sanal Sipariş hissini
+              Doply ödeme verisi toplamaz. Aşağıdaki seçenekler yalnızca Sanal Sipariş hissini
               tamamlamak için kullanılan simülasyon modlarıdır.
             </p>
           </div>
@@ -168,7 +169,7 @@ export default function PaymentSimulationPage() {
               <Label
                 key={option.id}
                 htmlFor={option.id}
-                className="flex cursor-pointer gap-3 rounded-lg border bg-background p-4 transition hover:border-primary/50"
+                className="flex cursor-pointer gap-3 rounded-lg border bg-background p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-lift"
               >
                 <RadioGroupItem id={option.id} value={option.id} className="mt-1" />
                 <span>
@@ -181,7 +182,7 @@ export default function PaymentSimulationPage() {
             ))}
           </RadioGroup>
 
-          <Label className="mt-5 flex cursor-pointer items-start gap-3 rounded-lg border bg-secondary/45 p-4">
+          <Label className="mt-5 flex cursor-pointer items-start gap-3 rounded-lg border bg-secondary/45 p-4 shadow-sm">
             <input
               type="checkbox"
               className="mt-1 h-4 w-4 rounded border-input text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
@@ -205,4 +206,19 @@ export default function PaymentSimulationPage() {
       </CheckoutStepShell>
     </CheckoutEmptyGuard>
   );
+}
+
+async function logSimulationOrder(order: SimulatedOrder) {
+  try {
+    await fetch("/api/simulation-orders", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(order),
+    });
+  } catch (error) {
+    console.warn("doply_simulation_order_log_client_failed", {
+      simulationNumber: order.id,
+      reason: error instanceof Error ? error.message : "unknown",
+    });
+  }
 }

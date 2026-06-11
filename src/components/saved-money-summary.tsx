@@ -14,7 +14,7 @@ export function SavedMoneySummary({
   label = "Bugün harcamaktan kaçındığın tutar",
 }: SavedMoneySummaryProps) {
   return (
-    <Card className="border-saved/20 bg-saved/5 shadow-sm">
+    <Card className="border-saved/20 bg-[linear-gradient(180deg,hsl(var(--saved)/0.08),hsl(var(--card)))] shadow-card">
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between gap-3">
           <div>

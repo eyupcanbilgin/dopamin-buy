@@ -34,9 +34,9 @@ const principles = [
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = buildMetadata({
-  title: "Dopamin | Alışveriş hissi, gerçek ödeme olmadan",
+  title: "Doply | Alışveriş hissi, gerçek ödeme olmadan",
   description:
-    "Dopamin alışveriş isteğini Sanal Sipariş akışıyla gerçek para harcamadan tamamlamaya yardımcı olan etik bir simülasyon platformudur.",
+    "Doply alışveriş isteğini Sanal Sipariş akışıyla gerçek para harcamadan tamamlamaya yardımcı olan etik bir simülasyon platformudur.",
   path: "/",
   keywords: ["alışveriş hissi", "sanal sipariş", "gerçek ödeme yok"],
 });
@@ -49,7 +49,7 @@ export default async function LandingPage() {
 
   return (
     <>
-      <section className="relative min-h-[76svh] overflow-hidden">
+      <section className="relative min-h-[78svh] overflow-hidden">
         <Image
           src="https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?auto=format&fit=crop&w=1800&q=85"
           alt="Modern mağaza vitrininde seçili ürünler"
@@ -58,14 +58,14 @@ export default async function LandingPage() {
           sizes="100vw"
           className="object-cover"
         />
-        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(19,24,24,0.82),rgba(19,24,24,0.46),rgba(19,24,24,0.14))]" />
-        <div className="container relative flex min-h-[76svh] items-center py-16">
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(18,24,42,0.88),rgba(18,24,42,0.54),rgba(18,24,42,0.12))]" />
+        <div className="container relative flex min-h-[78svh] items-center py-16">
           <Reveal className="max-w-3xl text-white">
             <Badge className="border-white/20 bg-white/14 text-white backdrop-blur">
               Simülasyon alışveriş alanı
             </Badge>
             <h1 className="mt-5 max-w-2xl text-5xl font-bold leading-tight tracking-normal sm:text-6xl">
-              Dopamin
+              Doply
             </h1>
             <p className="mt-5 max-w-2xl text-lg leading-8 text-white/86">
               Alışveriş dürtüsünü gerçek para harcamadan, ticari kayıt oluşturmadan ve seni
@@ -89,6 +89,20 @@ export default async function LandingPage() {
             </div>
           </Reveal>
         </div>
+        <div className="absolute inset-x-0 bottom-0 hidden border-y border-white/12 bg-navy/42 backdrop-blur-xl md:block">
+          <div className="container grid grid-cols-3 divide-x divide-white/12 text-white">
+            {[
+              ["Sanal sepet", "Gerçek ödeme olmadan ürün seçme ritmi"],
+              ["Dürtü puanı", "Başta ve kapanışta nazik kontrol"],
+              ["Korunan tutar", "Harcamadan tamamlanan alışveriş hissi"],
+            ].map(([title, text]) => (
+              <div key={title} className="py-4">
+                <p className="text-sm font-bold">{title}</p>
+                <p className="mt-1 text-xs leading-5 text-white/70">{text}</p>
+              </div>
+            ))}
+          </div>
+        </div>
       </section>
 
       <section className="container py-6">
@@ -101,14 +115,14 @@ export default async function LandingPage() {
         />
       </section>
 
-      <section id="etik-ilkeler" className="container py-16">
+      <section id="etik-ilkeler" className="container py-14 sm:py-16">
         <Reveal className="mx-auto max-w-3xl text-center">
           <Badge variant="calm">Destekleyici araç, tıbbi tedavi değil</Badge>
           <h2 className="mt-4 text-3xl font-bold tracking-normal sm:text-4xl">
             Gerçek alışveriş hissi, gerçek finansal sonuçlar olmadan.
           </h2>
           <p className="mt-4 text-base leading-7 text-muted-foreground">
-            Dopamin, sepete ekleme, teslimat seçme ve sanal ödeme adımlarını hissettirir; ancak
+            Doply, sepete ekleme, teslimat seçme ve sanal ödeme adımlarını hissettirir; ancak
             satın alma, ödeme, kargo veya ticari teslimat süreci oluşturmaz.
           </p>
         </Reveal>
@@ -118,7 +132,7 @@ export default async function LandingPage() {
             <Reveal key={principle.title} delay={index * 0.08}>
               <Card className="h-full shadow-sm">
                 <CardHeader>
-                  <span className="flex h-11 w-11 items-center justify-center rounded-md bg-secondary text-secondary-foreground">
+                <span className="flex h-11 w-11 items-center justify-center rounded-md bg-secondary text-secondary-foreground shadow-sm">
                     <principle.icon className="h-5 w-5" aria-hidden="true" />
                   </span>
                   <CardTitle>{principle.title}</CardTitle>
@@ -132,7 +146,7 @@ export default async function LandingPage() {
         </div>
       </section>
 
-      <section className="border-y bg-card/62 py-16">
+      <section className="border-y bg-card/72 py-14 sm:py-16">
         <div className="container grid gap-10 lg:grid-cols-[0.82fr_1.18fr] lg:items-center">
           <Reveal>
             <Badge variant="success">Sanal Sipariş</Badge>
@@ -168,7 +182,7 @@ export default async function LandingPage() {
                   text: "Kaçınılan harcamayı ve dürtü değişimini fark et.",
                 },
               ].map((step) => (
-                <div key={step.label} className="rounded-lg border bg-background p-5 shadow-sm">
+                <div key={step.label} className="commerce-card bg-background p-5">
                   <span className="flex h-9 w-9 items-center justify-center rounded-md bg-primary text-sm font-bold text-primary-foreground">
                     {step.label}
                   </span>

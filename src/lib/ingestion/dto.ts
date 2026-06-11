@@ -14,7 +14,7 @@ const FIELD_ALIASES = {
   brand: ["brand", "brandName", "brand_name", "marka", "Marka"],
   rating: ["rating", "score", "puan", "Puan"],
   reviewCount: ["reviewCount", "review_count", "yorum_sayisi", "Yorum Sayısı"],
-  dopaminScore: ["dopaminScore", "dopamineScore", "dopamin_skoru", "Dopamin Skoru"],
+  dopaminScore: ["dopaminScore", "dopamineScore", "dopamin_skoru", "Doply Skoru"],
   merchant: ["merchant", "seller", "store", "magaza", "mağaza", "Mağaza"],
   simulatedDeliveryEstimate: [
     "simulatedDeliveryEstimate",

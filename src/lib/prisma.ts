@@ -1,18 +1,14 @@
 import { PrismaClient } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 
+import { requireDatabaseUrl } from "@/lib/env";
+
 const globalForPrisma = globalThis as unknown as {
-  dopaminPrisma?: PrismaClient;
+  doplyPrisma?: PrismaClient;
 };
 
 function createPrismaClient() {
-  const databaseUrl = process.env.DATABASE_URL;
-
-  if (!databaseUrl) {
-    throw new Error("DATABASE_URL is required for database access.");
-  }
-
-  const adapter = new PrismaPg(databaseUrl);
+  const adapter = new PrismaPg(requireDatabaseUrl());
   return new PrismaClient({ adapter });
 }
 
@@ -21,6 +17,6 @@ export function getPrisma() {
     return createPrismaClient();
   }
 
-  globalForPrisma.dopaminPrisma ??= createPrismaClient();
-  return globalForPrisma.dopaminPrisma;
+  globalForPrisma.doplyPrisma ??= createPrismaClient();
+  return globalForPrisma.doplyPrisma;
 }

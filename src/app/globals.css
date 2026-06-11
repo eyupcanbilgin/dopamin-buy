@@ -54,8 +54,9 @@
   body {
     @apply bg-background text-foreground antialiased;
     background-image:
-      radial-gradient(circle at 18% 0%, hsl(var(--dopamine) / 0.18), transparent 28rem),
-      linear-gradient(180deg, hsl(var(--surface-subtle)), hsl(var(--background)) 28rem);
+      linear-gradient(180deg, hsl(var(--surface-subtle)) 0, hsl(var(--background)) 34rem),
+      linear-gradient(90deg, hsl(var(--primary) / 0.06), transparent 28%, hsl(var(--dopamine) / 0.08));
+    text-rendering: geometricPrecision;
   }
 
   ::selection {
@@ -70,6 +71,19 @@
   }
 
   .premium-card {
-    @apply rounded-lg border border-border/80 bg-card shadow-soft;
+    @apply rounded-lg border border-border/70 bg-card shadow-soft;
+    background-image: linear-gradient(180deg, hsl(var(--card)), hsl(var(--surface-subtle) / 0.72));
+  }
+
+  .commerce-card {
+    @apply rounded-lg border border-border/70 bg-card shadow-sm transition duration-300;
+  }
+
+  .commerce-card:hover {
+    @apply border-primary/25 shadow-lift;
+  }
+
+  .quiet-panel {
+    @apply rounded-lg border border-border/70 bg-surface-subtle/80 shadow-sm;
   }
 }

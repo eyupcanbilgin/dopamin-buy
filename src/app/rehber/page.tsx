@@ -12,7 +12,7 @@ import { buildBreadcrumbJsonLd, buildMetadata } from "@/lib/seo";
 export const metadata: Metadata = buildMetadata({
   title: "Alışveriş İsteği Rehberi",
   description:
-    "Alışveriş isteğini harcama yapmadan yönetmeye yardımcı Dopamin rehberleri. Sanal Sipariş, sanal sepet ve dürtü farkındalığı hakkında açık içerikler.",
+    "Alışveriş isteğini harcama yapmadan yönetmeye yardımcı Doply rehberleri. Sanal Sipariş, sanal sepet ve dürtü farkındalığı hakkında açık içerikler.",
   path: "/rehber",
   keywords: ["alışveriş isteği rehberi", "sanal sepet", "sanal sipariş nedir"],
 });
@@ -24,7 +24,7 @@ export default function GuideIndexPage() {
     <main className="container py-10">
       <JsonLd
         data={buildBreadcrumbJsonLd([
-          { name: "Dopamin", path: "/" },
+          { name: "Doply", path: "/" },
           { name: "Rehber", path: "/rehber" },
         ])}
       />
@@ -34,12 +34,12 @@ export default function GuideIndexPage() {
           Alışveriş isteği rehberi
         </h1>
         <p className="mt-3 max-w-3xl text-sm leading-6 text-muted-foreground">
-          Dopamin&apos;in amacı alışveriş hissini gerçek para harcamadan tamamlamaya destek olmaktır.
+          Doply&apos;in amacı alışveriş hissini gerçek para harcamadan tamamlamaya destek olmaktır.
           Bu rehberler tıbbi tedavi değil, sakin ve dürüst ürün açıklamalarıdır.
         </p>
       </section>
 
-      <section className="grid gap-4 md:grid-cols-2" aria-label="Dopamin rehber yazıları">
+      <section className="grid gap-4 md:grid-cols-2" aria-label="Doply rehber yazıları">
         {guides.map((guide) => (
           <Card key={guide.slug} className="h-full">
             <CardHeader>

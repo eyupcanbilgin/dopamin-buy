@@ -251,7 +251,7 @@ export const useCartStore = create<CartState>()(
       setHasHydrated: (value) => set({ hasHydrated: value }),
     }),
     {
-      name: "dopamin-simulation-session",
+      name: "doply-simulation-session",
       onRehydrateStorage: () => (state) => {
         state?.setHasHydrated(true);
       },
@@ -279,13 +279,13 @@ function redactOrderDelivery(order: SimulatedOrder): SimulatedOrder {
     triggers: order.triggers ?? [],
     delayMode: order.delayMode ?? null,
     cooldownUntil: order.cooldownUntil ?? null,
-    reflection: order.reflection ?? null,
+    reflection: null,
     delivery: order.delivery
       ? {
           city: "Sanal Şehir",
           district: "Sanal Alan",
           addressType: order.delivery.addressType,
-          fictionalAddress: "Dopamin Simülasyon Alanı",
+          fictionalAddress: "Doply Simülasyon Alanı",
         }
       : null,
   };

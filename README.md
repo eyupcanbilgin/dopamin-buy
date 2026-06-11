@@ -1,6 +1,6 @@
-# Dopamin
+# Doply
 
-Dopamin, online alışveriş dürtüsünü gerçek para harcamadan tamamlamaya yardımcı olan etik bir alışveriş simülasyonu platformudur.
+Doply, online alışveriş dürtüsünü gerçek para harcamadan tamamlamaya yardımcı olan etik bir alışveriş simülasyonu platformudur.
 
 Bu proje bir ecommerce checkout sistemi değildir. Gerçek ödeme almaz, gerçek teslimat planlamaz, fatura üretmez ve kullanıcıyı gerçek bir satın alma yaptığına inandırmaz. Ürün akışı özellikle `Sanal Sipariş`, `Simülasyon` ve `Gerçek ödeme yok` diliyle tasarlanmıştır.
 
@@ -23,7 +23,7 @@ Bu proje bir ecommerce checkout sistemi değildir. Gerçek ödeme almaz, gerçek
 
 ## Etik sınırlar
 
-Dopamin özellikle şu verileri istemez ve saklamaz:
+Doply özellikle şu verileri istemez ve saklamaz:
 
 - gerçek kredi kartı numarası
 - CVV
@@ -63,8 +63,9 @@ cp .env.example .env
 `.env` içinde PostgreSQL bağlantını ayarla:
 
 ```bash
-DATABASE_URL="postgresql://postgres:postgres@localhost:5432/dopamin?schema=public"
-DOPAMIN_ADMIN_KEY="yerel-guvenli-admin-anahtari"
+DATABASE_URL="postgresql://postgres:postgres@localhost:5432/doply?schema=public"
+DOPLY_ADMIN_KEY="yerel-guvenli-admin-anahtari"
+NEXT_PUBLIC_SITE_URL="http://localhost:3000"
 ```
 
 Prisma client üret:
@@ -93,11 +94,34 @@ http://localhost:3000
 npm run prisma:validate
 ```
 
+Staging migration deploy:
+
+```bash
+npm run prisma:migrate:deploy
+```
+
 Seed çalıştırma:
 
 ```bash
 npm run db:seed
 ```
+
+Alternatif Prisma seed scripti:
+
+```bash
+npm run prisma:db:seed
+```
+
+Staging için gereken temel ortam değişkenleri:
+
+```bash
+DATABASE_URL="postgresql://USER:PASSWORD@HOST:PORT/DATABASE?schema=public"
+DOPLY_ADMIN_KEY="uzun-rastgele-staging-admin-anahtari"
+NEXT_PUBLIC_SITE_URL="https://doply.app"
+NEXT_PUBLIC_DOPLY_PREMIUM_NO_ADS="false"
+```
+
+Staging veritabanı kurulum sırası: PostgreSQL veritabanını oluştur, `DATABASE_URL` değerini ayarla, `npm run prisma:validate` ile şemayı doğrula, `npm run prisma:migrate:deploy` ile migration dosyalarını uygula, ardından gerekiyorsa `npm run db:seed` veya admin import paneliyle katalog verisini yükle.
 
 Seed içeriği:
 
@@ -117,7 +141,7 @@ Not: Seed için çalışan bir PostgreSQL veritabanı ve doğru `DATABASE_URL` g
 - CSV dosyaları
 - JSON feed dosyaları
 - partner veya affiliate API/feed kaynakları
-- Dopamin tarafından üretilmiş sentetik katalog verisi
+- Doply tarafından üretilmiş sentetik katalog verisi
 
 Web scraping, koruma atlatma veya izinsiz ürün görseli kullanımı bu projenin kapsamı dışındadır.
 
@@ -131,7 +155,7 @@ API route:
 
 ```text
 POST /api/admin/import-products
-Header: x-dopamin-admin-key: <DOPAMIN_ADMIN_KEY>
+Header: x-doply-admin-key: <DOPLY_ADMIN_KEY>
 ```
 
 Örnek import dosyaları:
@@ -144,7 +168,7 @@ Desteklenen import akışları:
 - CSV yükleme
 - JSON yapıştırma
 - deterministik seed ile 10.000 ürüne kadar sentetik katalog üretimi
-- 12 kategorilik Dopamin taksonomisini yeniden doldurma
+- 12 kategorilik Doply taksonomisini yeniden doldurma
 - sentetik demo kataloğunu güvenli şekilde sıfırlama
 
 Import raporu toplam satır, içe aktarılan satır, atlanan satır, doğrulama hataları ve tekrar sayısını gösterir. Fiyatlar veritabanında integer kuruş olarak saklanır.
@@ -185,7 +209,7 @@ Bu klasörde git yoksa:
 ```bash
 git init
 git add .
-git commit -m "Initial Dopamin simulation platform"
+git commit -m "Initial Doply simulation platform"
 ```
 
 Sonra GitHub'da boş bir repo oluşturup remote ekle:
@@ -198,4 +222,4 @@ git push -u origin main
 
 ## Ürün notu
 
-Dopamin destekleyici bir farkındalık aracıdır; tıbbi tedavi yerine geçmez. Zorlayıcı alışveriş dürtüleri için profesyonel destek almak iyi bir adım olabilir.
+Doply destekleyici bir farkındalık aracıdır; tıbbi tedavi yerine geçmez. Zorlayıcı alışveriş dürtüleri için profesyonel destek almak iyi bir adım olabilir.

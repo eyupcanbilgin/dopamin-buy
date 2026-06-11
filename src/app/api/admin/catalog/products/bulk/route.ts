@@ -15,7 +15,7 @@ const bulkActionSchema = z.object({
     "unpublish",
     "update-category",
     "regenerate-prices",
-    "regenerate-dopamin-scores",
+    "regenerate-doply-scores",
     "delete-selected",
   ]),
   productIds: z.array(z.string().min(1)).min(1).max(1000),
@@ -30,7 +30,8 @@ export async function POST(request: NextRequest) {
     return adminError;
   }
 
-  const parsed = bulkActionSchema.safeParse(await request.json());
+  const payload = await request.json().catch(() => null);
+  const parsed = bulkActionSchema.safeParse(payload);
 
   if (!parsed.success) {
     return NextResponse.json(
@@ -91,7 +92,7 @@ export async function POST(request: NextRequest) {
         return { affectedCount: products.length };
       }
 
-      if (action === "regenerate-dopamin-scores") {
+      if (action === "regenerate-doply-scores") {
         const products = await transaction.product.findMany({
           where: { id: { in: productIds } },
           select: { id: true },

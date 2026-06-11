@@ -14,9 +14,9 @@ export function Footer() {
             <div className="flex flex-wrap gap-2">
               <SimulationBadge />
             </div>
-            <p className="mt-4 text-sm font-semibold text-navy">Dopamin</p>
+            <p className="mt-4 text-sm font-semibold text-navy">Doply</p>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
-              Dopamin gerçek ödeme almaz. Sanal Sipariş akışı alışveriş hissini harcama yapmadan
+              Doply gerçek ödeme almaz. Sanal Sipariş akışı alışveriş hissini harcama yapmadan
               kapatmaya yardımcı olur; tıbbi tedavi yerine geçmez.
             </p>
           </div>
@@ -61,7 +61,7 @@ export function Footer() {
         </div>
         <Separator className="my-6" />
         <p className="text-xs text-muted-foreground">
-          Dopamin gerçek ödeme almaz. Kart bilgisi, kimlik numarası veya tam açık adres istemez.
+          Doply gerçek ödeme almaz. Kart bilgisi, kimlik numarası veya tam açık adres istemez.
         </p>
       </Container>
     </footer>

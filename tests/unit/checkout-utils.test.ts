@@ -28,7 +28,7 @@ describe("Checkout Utilities", () => {
         addressType: "home",
       });
 
-      expect(address).toContain("Dopamin Simülasyon Alanı");
+      expect(address).toContain("Doply Simülasyon Alanı");
       expect(address).toContain("Çankaya / Ankara");
     });
 

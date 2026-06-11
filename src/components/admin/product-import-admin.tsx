@@ -33,7 +33,7 @@ export function ProductImportAdmin() {
   const [csvFile, setCsvFile] = useState<File | null>(null);
   const [jsonText, setJsonText] = useState(sampleJson);
   const [syntheticCount, setSyntheticCount] = useState(10_000);
-  const [syntheticSeed, setSyntheticSeed] = useState("dopamin-demo-2026");
+  const [syntheticSeed, setSyntheticSeed] = useState("doply-demo-2026");
   const [report, setReport] = useState<ProductImportReport | null>(null);
   const [error, setError] = useState("");
   const [loadingLabel, setLoadingLabel] = useState("");
@@ -52,7 +52,7 @@ export function ProductImportAdmin() {
 
     await submitImport("CSV içe aktarılıyor", {
       method: "POST",
-      headers: { "x-dopamin-admin-key": adminKey },
+      headers: { "x-doply-admin-key": adminKey },
       body: formData,
     });
   }
@@ -62,7 +62,7 @@ export function ProductImportAdmin() {
       method: "POST",
       headers: {
         "content-type": "application/json",
-        "x-dopamin-admin-key": adminKey,
+        "x-doply-admin-key": adminKey,
       },
       body: JSON.stringify({ sourceType: "json", payload: jsonText }),
     });
@@ -103,7 +103,7 @@ export function ProductImportAdmin() {
       method: "POST",
       headers: {
         "content-type": "application/json",
-        "x-dopamin-admin-key": adminKey,
+        "x-doply-admin-key": adminKey,
       },
       body: JSON.stringify(body),
     });
@@ -141,7 +141,7 @@ export function ProductImportAdmin() {
           </div>
           <CardTitle className="mt-3">Ürün veri katmanı</CardTitle>
           <CardDescription className="max-w-3xl leading-6">
-            Bu alan yalnızca CSV, JSON, partner feed veya Dopamin tarafından üretilmiş sentetik
+            Bu alan yalnızca CSV, JSON, partner feed veya Doply tarafından üretilmiş sentetik
             katalog verisi içindir. Web sitesi kazıma, koruma atlatma ya da izinsiz görsel kullanımı
             için tasarlanmamıştır.
           </CardDescription>
@@ -260,7 +260,7 @@ export function ProductImportAdmin() {
               <Sparkles className="h-5 w-5" aria-hidden="true" />
             </span>
             <CardTitle>Sentetik üret</CardTitle>
-            <CardDescription>Gerçekçi ama tamamen kurgusal Dopamin katalog verisi.</CardDescription>
+            <CardDescription>Gerçekçi ama tamamen kurgusal Doply katalog verisi.</CardDescription>
           </CardHeader>
           <CardContent className="grid gap-4">
             <div className="grid gap-2">

@@ -5,6 +5,7 @@ import { z } from "zod";
 import { createAdminAuditLog } from "@/lib/admin-audit";
 import { requireAdmin } from "@/lib/admin-auth";
 import { getPrisma } from "@/lib/prisma";
+import { adminImportRateLimit } from "@/lib/rate-limit";
 import {
   refillSyntheticTaxonomy,
   resetSyntheticDemoCatalog,
@@ -21,6 +22,8 @@ import type { ProductImportReport } from "@/lib/ingestion/pipeline";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+
+const MAX_CSV_FILE_SIZE_BYTES = 8 * 1024 * 1024;
 
 const jsonRequestSchema = z.discriminatedUnion("sourceType", [
   z.object({
@@ -47,7 +50,7 @@ type ImportRequestResult =
   | { report: ProductImportReport; provider?: never };
 
 export async function POST(request: NextRequest) {
-  const adminError = requireAdmin(request);
+  const adminError = requireAdmin(request, { rateLimit: adminImportRateLimit });
 
   if (adminError) {
     return adminError;
@@ -98,10 +101,15 @@ async function createImportResultFromRequest(
       throw new Error("CSV import için dosya yüklenmeli.");
     }
 
+    if (file.size > MAX_CSV_FILE_SIZE_BYTES) {
+      throw new Error("CSV dosyası 8 MB sınırını aşamaz.");
+    }
+
     return { provider: new CsvProductProvider(await file.text(), file.name || "products.csv") };
   }
 
-  const body = jsonRequestSchema.parse(await request.json());
+  const payload = await request.json().catch(() => null);
+  const body = jsonRequestSchema.parse(payload);
 
   if (body.sourceType === "json") {
     return { provider: new JsonProductProvider(body.payload, "JSON ürün içe aktarımı") };
@@ -153,5 +161,15 @@ async function recordImportResult(prisma: PrismaClient, report: ProductImportRep
         validationErrorCount: report.validationErrors.length,
       },
     });
+  });
+
+  console.info("doply_catalog_import_completed", {
+    source: report.sourceName,
+    provider: report.provider,
+    totalRows: report.totalRows,
+    importedCount: report.importedCount,
+    skippedCount: report.skippedCount,
+    duplicateCount: report.duplicateCount,
+    validationErrorCount: report.validationErrors.length,
   });
 }

@@ -12,7 +12,7 @@ export function CartSummary({ subtotal, itemCount }: CartSummaryProps) {
   const dopamineDiscount = subtotal + simulatedShipping;
 
   return (
-    <div className="rounded-lg border bg-card p-5 shadow-sm">
+    <div className="rounded-lg border bg-card p-5 shadow-card">
       <h2 className="text-lg font-semibold">Sepet özeti</h2>
       <div className="mt-4 space-y-3 text-sm">
         <div className="flex justify-between gap-4">
@@ -28,12 +28,12 @@ export function CartSummary({ subtotal, itemCount }: CartSummaryProps) {
           <span className="font-medium">{formatCurrency(simulatedShipping)}</span>
         </div>
         <div className="flex justify-between gap-4">
-          <span className="text-muted-foreground">Dopamin indirimi</span>
+          <span className="text-muted-foreground">Doply indirimi</span>
           <span className="font-semibold text-saved">-{formatCurrency(dopamineDiscount)}</span>
         </div>
       </div>
       <Separator className="my-4" />
-      <div className="mb-4 flex items-center justify-between gap-4 rounded-md bg-saved/10 p-3">
+      <div className="mb-4 flex items-center justify-between gap-4 rounded-md border border-saved/15 bg-saved/10 p-3">
         <span className="font-semibold text-saved">Ödenecek tutar</span>
         <span className="text-xl font-bold text-saved">{formatCurrency(0)}</span>
       </div>
@@ -43,7 +43,7 @@ export function CartSummary({ subtotal, itemCount }: CartSummaryProps) {
       </div>
       <SavedMoneyBadge amount={subtotal} className="mt-3" />
       <p className="mt-3 text-xs leading-5 text-muted-foreground">
-        Dopamin indirimi sepet tutarını dengeler; ödeme adımı kart bilgisi istemez.
+        Doply indirimi sepet tutarını dengeler; ödeme adımı kart bilgisi istemez.
       </p>
     </div>
   );

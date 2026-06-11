@@ -26,7 +26,7 @@ export function UrgeMeter({
   return (
     <section className={cn("premium-card p-5", compact && "p-4")}>
       <div className="flex items-start gap-3">
-        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary shadow-sm">
           <HeartPulse className="h-5 w-5" aria-hidden="true" />
         </span>
         <div className="min-w-0">
@@ -47,7 +47,7 @@ export function UrgeMeter({
             type="button"
             variant={value === score ? "default" : "outline"}
             className={cn(
-              "h-10 px-0",
+              "h-10 px-0 transition-transform hover:-translate-y-0.5",
               value === score && "shadow-glow",
               value !== score && "bg-surface hover:bg-primary/8",
             )}

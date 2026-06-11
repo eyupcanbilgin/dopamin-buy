@@ -8,7 +8,7 @@ import { buildMetadata } from "@/lib/seo";
 
 export const metadata = buildMetadata({
   title: "Ürün Import Admin",
-  description: "Dopamin katalog import yönetimi.",
+  description: "Doply katalog import yönetimi.",
   path: "/admin/import",
   noIndex: true,
 });
@@ -17,7 +17,7 @@ export default function AdminImportPage() {
   return (
     <main className="container py-8">
       <section className="mb-6">
-        <Badge variant="calm">Dopamin veri yönetimi</Badge>
+        <Badge variant="calm">Doply veri yönetimi</Badge>
         <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div className="flex items-start gap-3">
             <span className="hidden h-12 w-12 items-center justify-center rounded-md bg-primary text-primary-foreground sm:flex">
@@ -26,7 +26,7 @@ export default function AdminImportPage() {
             <div>
               <h1 className="text-3xl font-bold tracking-normal">Ürün katalog importu</h1>
               <p className="mt-2 max-w-3xl text-sm leading-6 text-muted-foreground">
-                CSV/JSON kaynaklarını veya sentetik katalog üreticisini kullanarak Dopamin mağaza
+                CSV/JSON kaynaklarını veya sentetik katalog üreticisini kullanarak Doply mağaza
                 simülasyonu için ürün verisi ekle. Bu akış gerçek e-ticaret siparişi, ödeme veya
                 teslimat oluşturmaz.
               </p>

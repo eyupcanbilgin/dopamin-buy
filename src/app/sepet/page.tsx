@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Minus, Plus, Trash2 } from "lucide-react";
+import { Minus, Plus, ShieldCheck, Trash2 } from "lucide-react";
 
 import { CartSummary } from "@/components/cart-summary";
 import { EmptyState } from "@/components/empty-state";
@@ -75,14 +75,27 @@ export default function CartPage() {
         </Button>
       </div>
 
+      <section className="mb-6 rounded-lg border border-saved/20 bg-saved/5 p-4 shadow-sm">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <p className="flex items-start gap-3 text-sm leading-6 text-muted-foreground">
+            <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-saved" aria-hidden="true" />
+            <span>
+              Sepetin hazır. Sanal Sipariş tamamlandığında bu tutar harcanmış sayılmaz; kapanış
+              ekranında korunan toplam olarak görünür.
+            </span>
+          </p>
+          <p className="text-2xl font-bold text-saved">{formatCurrency(subtotal)}</p>
+        </div>
+      </section>
+
       <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
-        <section className="rounded-lg border bg-card shadow-sm">
+        <section className="self-start overflow-hidden rounded-lg border bg-card shadow-card">
           {lines.map((line, index) => (
             <div key={line.product.id}>
-              <article className="grid gap-4 p-4 sm:grid-cols-[112px_1fr_auto] sm:items-center">
+              <article className="grid gap-4 p-4 transition hover:bg-surface-subtle/80 sm:grid-cols-[112px_1fr_auto] sm:items-center">
                 <Link
                   href={`/urun/${line.product.slug}`}
-                  className="focus-ring relative aspect-square overflow-hidden rounded-lg bg-muted"
+                  className="focus-ring relative aspect-square overflow-hidden rounded-lg bg-muted shadow-sm"
                 >
                   <Image
                     src={line.product.image}
@@ -102,7 +115,7 @@ export default function CartPage() {
                   <p className="mt-1 text-sm leading-5 text-muted-foreground">
                     {line.product.shortDescription}
                   </p>
-                  <p className="mt-3 text-lg font-bold">{formatCurrency(line.product.price)}</p>
+                  <p className="mt-3 text-lg font-bold text-navy">{formatCurrency(line.product.price)}</p>
                 </div>
                 <div className="flex items-center justify-between gap-3 sm:flex-col sm:items-end">
                   <div className="flex items-center rounded-md border">

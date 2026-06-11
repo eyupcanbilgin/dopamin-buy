@@ -20,12 +20,12 @@ export const guidePages: GuidePage[] = [
     slug: "alisveris-istegi-nasil-yonetilir",
     title: "Alışveriş isteği nasıl yönetilir?",
     description:
-      "Alışveriş isteğini fark etmek, bekletmek ve harcama yapmadan tamamlamak için destekleyici Dopamin yaklaşımı.",
+      "Alışveriş isteğini fark etmek, bekletmek ve harcama yapmadan tamamlamak için destekleyici Doply yaklaşımı.",
     updatedAt: "2026-06-10",
     readingTime: "4 dk okuma",
     keywords: ["alışveriş isteği", "dürtü yönetimi", "harcamadan bekleme"],
     intro:
-      "Alışveriş isteği bazen ihtiyaçtan, bazen stres, sıkılma, sosyal medya veya kendini ödüllendirme arzusundan doğar. Dopamin bu hissi bastırmak yerine güvenli bir simülasyon akışında görünür kılar.",
+      "Alışveriş isteği bazen ihtiyaçtan, bazen stres, sıkılma, sosyal medya veya kendini ödüllendirme arzusundan doğar. Doply bu hissi bastırmak yerine güvenli bir simülasyon akışında görünür kılar.",
     sections: [
       {
         title: "İsteği önce puanla",
@@ -40,7 +40,7 @@ export const guidePages: GuidePage[] = [
       {
         title: "Harcamadan kapanış oluştur",
         body:
-          "Sanal sepete eklemek, teslimat ve ödeme hissini simüle etmek, bazı kullanıcılar için alışveriş döngüsünü gerçek harcama olmadan kapatmaya yardımcı olur. Dopamin kart bilgisi veya açık adres istemez.",
+          "Sanal sepete eklemek, teslimat ve ödeme hissini simüle etmek, bazı kullanıcılar için alışveriş döngüsünü gerçek harcama olmadan kapatmaya yardımcı olur. Doply kart bilgisi veya açık adres istemez.",
       },
       {
         title: "Kısa bir bekleme alanı aç",
@@ -50,9 +50,9 @@ export const guidePages: GuidePage[] = [
     ],
     faqs: [
       {
-        question: "Dopamin alışveriş isteğini tedavi eder mi?",
+        question: "Doply alışveriş isteğini tedavi eder mi?",
         answer:
-          "Hayır. Dopamin tıbbi tedavi veya tanı sunmaz. Alışveriş hissini gerçek harcama yapmadan simüle eden destekleyici bir farkındalık aracıdır.",
+          "Hayır. Doply tıbbi tedavi veya tanı sunmaz. Alışveriş hissini gerçek harcama yapmadan simüle eden destekleyici bir farkındalık aracıdır.",
       },
       {
         question: "Alışveriş isteği gelince ne yapabilirim?",
@@ -65,17 +65,17 @@ export const guidePages: GuidePage[] = [
     slug: "sepete-ekleyip-almamak-neden-rahatlatir",
     title: "Sepete ekleyip almamak neden rahatlatır?",
     description:
-      "Sepete ekleme hissinin neden rahatlatıcı olabileceğini ve Dopamin'in bunu gerçek ödeme olmadan nasıl simüle ettiğini öğren.",
+      "Sepete ekleme hissinin neden rahatlatıcı olabileceğini ve Doply'nin bunu gerçek ödeme olmadan nasıl simüle ettiğini öğren.",
     updatedAt: "2026-06-10",
     readingTime: "3 dk okuma",
     keywords: ["sepete ekleyip almamak", "sanal sepet", "alışveriş hissi"],
     intro:
-      "Online alışverişte rahatlatıcı olan şey bazen ürüne sahip olmak değil, seçmek, karşılaştırmak ve sepeti tamamlamaktır. Dopamin bu döngüyü gerçek ödeme olmadan kapatır.",
+      "Online alışverişte rahatlatıcı olan şey bazen ürüne sahip olmak değil, seçmek, karşılaştırmak ve sepeti tamamlamaktır. Doply bu döngüyü gerçek ödeme olmadan kapatır.",
     sections: [
       {
         title: "Seçim yapmak zihinsel kapanış sağlar",
         body:
-          "Ürünü bulmak, renk veya model seçmek ve sepete eklemek bir kararın tamamlandığı hissini verebilir. Dopamin bu hissi ticari siparişe çevirmeden sunar.",
+          "Ürünü bulmak, renk veya model seçmek ve sepete eklemek bir kararın tamamlandığı hissini verebilir. Doply bu hissi ticari siparişe çevirmeden sunar.",
       },
       {
         title: "Sepet, isteği dışarı taşır",
@@ -85,14 +85,14 @@ export const guidePages: GuidePage[] = [
       {
         title: "Ödeme simülasyonu baskıyı azaltır",
         body:
-          "Dopamin ödeme alanında kart numarası, CVV veya son kullanma tarihi istemez. Bunun yerine sanal ödeme yöntemi seçilir ve akış para harcamadan tamamlanır.",
+          "Doply ödeme alanında kart numarası, CVV veya son kullanma tarihi istemez. Bunun yerine sanal ödeme yöntemi seçilir ve akış para harcamadan tamamlanır.",
       },
     ],
     faqs: [
       {
         question: "Sepete eklemek gerçek satın alma başlatır mı?",
         answer:
-          "Hayır. Dopamin'de sepet ve Sanal Sipariş yalnızca simülasyondur; gerçek ödeme, stok ayırma veya teslimat oluşturmaz.",
+          "Hayır. Doply'de sepet ve Sanal Sipariş yalnızca simülasyondur; gerçek ödeme, stok ayırma veya teslimat oluşturmaz.",
       },
       {
         question: "Sepeti tamamladıktan sonra ne olur?",
@@ -102,20 +102,20 @@ export const guidePages: GuidePage[] = [
     ],
   },
   {
-    slug: "dopamin-nasil-calisir",
-    title: "Dopamin nasıl çalışır?",
+    slug: "doply-nasil-calisir",
+    title: "Doply nasıl çalışır?",
     description:
-      "Dopamin'in sanal mağaza, sanal sepet, ödeme simülasyonu, takip ve dürtü paneli akışını açıkça anlatan rehber.",
+      "Doply'nin sanal mağaza, sanal sepet, ödeme simülasyonu, takip ve dürtü paneli akışını açıkça anlatan rehber.",
     updatedAt: "2026-06-10",
     readingTime: "4 dk okuma",
-    keywords: ["Dopamin nasıl çalışır", "alışveriş simülasyonu", "sanal ödeme"],
+    keywords: ["Doply nasıl çalışır", "alışveriş simülasyonu", "sanal ödeme"],
     intro:
-      "Dopamin, premium bir e-ticaret deneyimi gibi hissettiren ama gerçek satış yapmayan bir alışveriş simülasyonudur. Amaç alışveriş dürtüsünü gerçek para harcamadan tamamlamaya destek olmaktır.",
+      "Doply, premium bir e-ticaret deneyimi gibi hissettiren ama gerçek satış yapmayan bir alışveriş simülasyonudur. Amaç alışveriş dürtüsünü gerçek para harcamadan tamamlamaya destek olmaktır.",
     sections: [
       {
         title: "Önce açık bilgilendirme",
         body:
-          "İlk kullanımda Dopamin'in gerçek ödeme almadığı, gerçek teslimat yapmadığı, gerçek sipariş oluşturmadığı ve kart bilgisi istemediği açıkça anlatılır.",
+          "İlk kullanımda Doply'nin gerçek ödeme almadığı, gerçek teslimat yapmadığı, gerçek sipariş oluşturmadığı ve kart bilgisi istemediği açıkça anlatılır.",
       },
       {
         title: "Sonra gerçekçi keşif deneyimi",
@@ -135,12 +135,12 @@ export const guidePages: GuidePage[] = [
     ],
     faqs: [
       {
-        question: "Dopamin gerçek ürün satar mı?",
+        question: "Doply gerçek ürün satar mı?",
         answer:
-          "Hayır. Dopamin ürün benzeri katalog kullanır, ancak ödeme, teslimat, fatura veya gerçek sipariş oluşturmaz.",
+          "Hayır. Doply ürün benzeri katalog kullanır, ancak ödeme, teslimat, fatura veya gerçek sipariş oluşturmaz.",
       },
       {
-        question: "Dopamin hangi bilgileri istemez?",
+        question: "Doply hangi bilgileri istemez?",
         answer:
           "Kart numarası, CVV, son kullanma tarihi, kimlik numarası ve tam açık adres istemez.",
       },
@@ -150,12 +150,12 @@ export const guidePages: GuidePage[] = [
     slug: "sanal-siparis-nedir",
     title: "Sanal sipariş nedir?",
     description:
-      "Sanal Sipariş kavramının gerçek siparişten farkını, ödeme ve teslimat içermeyen Dopamin akışını öğren.",
+      "Sanal Sipariş kavramının gerçek siparişten farkını, ödeme ve teslimat içermeyen Doply akışını öğren.",
     updatedAt: "2026-06-10",
     readingTime: "3 dk okuma",
     keywords: ["sanal sipariş", "ödeme simülasyonu", "gerçek teslimat yok"],
     intro:
-      "Sanal Sipariş, Dopamin'de alışveriş hissini tamamlayan ama gerçek ticari işlem oluşturmayan kapanış adıdır. Bir sipariş numarası hissi verir; gerçek sipariş değildir.",
+      "Sanal Sipariş, Doply'de alışveriş hissini tamamlayan ama gerçek ticari işlem oluşturmayan kapanış adıdır. Bir sipariş numarası hissi verir; gerçek sipariş değildir.",
     sections: [
       {
         title: "Gerçek ödeme yoktur",
@@ -177,12 +177,12 @@ export const guidePages: GuidePage[] = [
       {
         question: "Sanal Sipariş numarası gerçek takip numarası mı?",
         answer:
-          "Hayır. Numara yalnızca Dopamin simülasyonunun kapanış hissi için üretilir; gerçek lojistik takibi değildir.",
+          "Hayır. Numara yalnızca Doply simülasyonunun kapanış hissi için üretilir; gerçek lojistik takibi değildir.",
       },
       {
         question: "Sanal Siparişten sonra ürün gelir mi?",
         answer:
-          "Hayır. Dopamin gerçek teslimat başlatmaz ve kullanıcıdan tam açık adres istemez.",
+          "Hayır. Doply gerçek teslimat başlatmaz ve kullanıcıdan tam açık adres istemez.",
       },
     ],
   },

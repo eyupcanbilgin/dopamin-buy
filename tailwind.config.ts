@@ -90,6 +90,7 @@ const config: Config = {
       boxShadow: {
         soft: "0 18px 50px -34px hsl(var(--navy) / 0.42)",
         lift: "0 16px 34px -24px hsl(var(--navy) / 0.34)",
+        card: "0 12px 28px -24px hsl(var(--navy) / 0.36)",
         glow: "0 18px 44px -28px hsl(var(--violet) / 0.58)",
       },
       fontFamily: {

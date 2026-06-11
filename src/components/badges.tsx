@@ -39,7 +39,7 @@ export function SavedMoneyBadge({
   );
 }
 
-export function DopaminScoreBadge({
+export function DoplyScoreBadge({
   score,
   className,
 }: BadgeProps & {
@@ -48,7 +48,7 @@ export function DopaminScoreBadge({
   return (
     <Badge variant="score" className={cn("gap-1.5 whitespace-nowrap", className)}>
       <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
-      Dopamin skoru {score.toFixed(1)}
+      Doply skoru {score.toFixed(1)}
     </Badge>
   );
 }

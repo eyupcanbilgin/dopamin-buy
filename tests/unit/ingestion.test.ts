@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { normalizeImportRow } from "@/lib/ingestion/dto";
-import { parsePriceToKurus } from "@/lib/ingestion/normalization";
+import { createProductSlug, parsePriceToKurus } from "@/lib/ingestion/normalization";
 import { ProductImportPipeline } from "@/lib/ingestion/pipeline";
 import { CsvProductProvider, JsonProductProvider } from "@/lib/ingestion/providers";
 import type {
@@ -79,6 +79,42 @@ describe("product ingestion", () => {
     expect(new Set(generated.map((row) => row.title)).size).toBe(10_000);
   });
 
+  it("keeps the 10,000 product synthetic catalog diverse and marketplace-realistic", () => {
+    const generated = generateSyntheticCatalog({ seed: "quality-gate" });
+    const titleSet = new Set(generated.map((row) => String(row.title)));
+    const slugSet = new Set(generated.map((row) => createProductSlug(String(row.title), String(row.brand), String(row.category))));
+    const brandCounts = new Map<string, number>();
+    let discountedCount = 0;
+    let maxDiscount = 0;
+
+    for (const row of generated) {
+      const brand = String(row.brand);
+      brandCounts.set(brand, (brandCounts.get(brand) ?? 0) + 1);
+      discountedCount += Number(row.discountPercentage ?? 0) > 0 ? 1 : 0;
+      maxDiscount = Math.max(maxDiscount, Number(row.discountPercentage ?? 0));
+
+      expect(String(row.imageUrl)).toMatch(/^https:\/\/placehold\.co\//);
+      expect(String(row.description)).not.toContain("deterministik");
+      expect(String(row.title)).not.toMatch(/[A-ZÇĞİÖŞÜ]{2}\d{6}/);
+      expect(Number(row.price)).toBeGreaterThan(0);
+      expect(Number(row.rating)).toBeGreaterThanOrEqual(3.5);
+      expect(Number(row.rating)).toBeLessThanOrEqual(4.9);
+    }
+
+    const discountRate = discountedCount / generated.length;
+    const topBrandCount = Math.max(...brandCounts.values());
+    const ratingVariations = new Set(generated.map((row) => Number(row.rating))).size;
+
+    expect(titleSet.size).toBe(10_000);
+    expect(slugSet.size).toBe(10_000);
+    expect(brandCounts.size).toBeGreaterThan(1_000);
+    expect(topBrandCount).toBeLessThanOrEqual(28);
+    expect(discountRate).toBeGreaterThan(0.25);
+    expect(discountRate).toBeLessThan(0.5);
+    expect(maxDiscount).toBeLessThanOrEqual(32);
+    expect(ratingVariations).toBeGreaterThanOrEqual(10);
+  });
+
   it("reports invalid rows and duplicate products without crashing the import", async () => {
     const repository = new MemoryImportRepository();
     const provider = new JsonProductProvider([
@@ -109,7 +145,7 @@ class MemoryImportRepository implements ProductImportRepository {
   }
 
   async upsertBrand(name?: string) {
-    return this.upsertRecord(this.brands, name || "Dopamin Studio");
+    return this.upsertRecord(this.brands, name || "Doply Studio");
   }
 
   async upsertProduct(input: UpsertProductInput) {

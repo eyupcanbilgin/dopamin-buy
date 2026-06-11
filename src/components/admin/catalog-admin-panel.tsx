@@ -151,7 +151,7 @@ export function CatalogAdminPanel() {
 
   const authHeaders = useMemo(
     () => ({
-      "x-dopamin-admin-key": adminKey,
+      "x-doply-admin-key": adminKey,
     }),
     [adminKey],
   );
@@ -704,7 +704,7 @@ function BulkActions({
               { value: "unpublish", label: "Yayından kaldır" },
               { value: "update-category", label: "Kategori güncelle" },
               { value: "regenerate-prices", label: "Fiyatları yeniden üret" },
-              { value: "regenerate-dopamin-scores", label: "Dopamin skorlarını yenile" },
+              { value: "regenerate-doply-scores", label: "Doply skorlarını yenile" },
               { value: "delete-selected", label: "Seçilenleri sil" },
             ]}
             emptyLabel="İşlem seç"
@@ -858,7 +858,7 @@ function ProductTable({
                   <td className="px-3 py-3">
                     <p>{product.rating.toFixed(1)} puan</p>
                     <p className="mt-1 text-xs text-muted-foreground">
-                      Dopamin {product.dopamineScore.toFixed(1)} · {product.reviewCount} yorum
+                      Doply {product.dopamineScore.toFixed(1)} · {product.reviewCount} yorum
                     </p>
                   </td>
                   <td className="px-3 py-3">
@@ -1011,7 +1011,7 @@ function ProductEditPanel({
         <div className="grid gap-3 sm:grid-cols-3">
           <TextField id="edit-rating" label="Rating" value={formState.rating} onChange={(value) => setField("rating", value)} type="number" />
           <TextField id="edit-reviews" label="Yorum sayısı" value={formState.reviewCount} onChange={(value) => setField("reviewCount", value)} type="number" />
-          <TextField id="edit-dopamin-score" label="Dopamin skoru" value={formState.dopamineScore} onChange={(value) => setField("dopamineScore", value)} type="number" />
+          <TextField id="edit-doply-score" label="Doply skoru" value={formState.dopamineScore} onChange={(value) => setField("dopamineScore", value)} type="number" />
         </div>
         <TextField id="edit-merchant" label="Sanal mağaza" value={formState.merchantName} onChange={(value) => setField("merchantName", value)} />
         <TextField

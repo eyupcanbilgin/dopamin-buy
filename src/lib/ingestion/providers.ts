@@ -63,7 +63,7 @@ export class JsonProductProvider implements ProductImportProvider {
 
 export class SyntheticProductProvider implements ProductImportProvider {
   readonly kind = "synthetic" as const;
-  readonly sourceName = "Dopamin sentetik katalog üreticisi";
+  readonly sourceName = "Doply sentetik katalog üreticisi";
 
   constructor(
     private readonly count = 10_000,

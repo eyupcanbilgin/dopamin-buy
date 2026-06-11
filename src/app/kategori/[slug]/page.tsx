@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 
 import { AdSlot } from "@/components/ad-slot";
 import { ProductListing } from "@/components/product/product-listing";
-import { SectionHeader } from "@/components/section-header";
 import { JsonLd } from "@/components/seo/json-ld";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { getPublicAdSlot } from "@/lib/ad-server";
 import {
@@ -41,14 +42,14 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
     : "Sanal alışveriş kategorisi";
   const description = category
     ? `${category.name} kategorisinde ürün keşfetme ve Sanal Sipariş hissini gerçek ödeme, stok vaadi veya teslimat olmadan deneyimle.`
-    : "Dopamin kategorileri gerçek satış yapmayan alışveriş simülasyonu vitrinleridir.";
+    : "Doply kategorileri gerçek satış yapmayan alışveriş simülasyonu vitrinleridir.";
 
   return buildMetadata({
     title,
     description,
     path: `/kategori/${slug}`,
     image: category?.image,
-    imageAlt: category ? `${category.name} sanal kategori vitrini` : "Dopamin kategori vitrini",
+    imageAlt: category ? `${category.name} sanal kategori vitrini` : "Doply kategori vitrini",
     keywords: category ? [`${category.name} sanal alışveriş`, `${category.name} simülasyonu`] : [],
     noIndex: !category,
   });
@@ -74,7 +75,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
       <JsonLd
         data={[
           buildBreadcrumbJsonLd([
-            { name: "Dopamin", path: "/" },
+            { name: "Doply", path: "/" },
             { name: "Sanal Mağaza", path: "/shop" },
             { name: category.name, path: `/kategori/${category.slug}` },
           ]),
@@ -93,14 +94,37 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
         </Link>
       </Button>
 
-      <section className="mb-8 premium-card p-6">
-        <SectionHeader
-          eyebrow="Kategori"
-          title={category.name}
-          description={category.description}
-          headingLevel="h1"
-          className="mb-0"
+      <section className="relative mb-8 overflow-hidden rounded-lg border bg-surface-strong text-white shadow-soft">
+        <Image
+          src={category.image}
+          alt={`${category.name} kategori vitrini`}
+          fill
+          priority
+          sizes="(min-width: 1024px) 1200px, 100vw"
+          className="object-cover opacity-45 mix-blend-screen"
         />
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,hsl(var(--navy)/0.92),hsl(var(--navy)/0.58),hsl(var(--navy)/0.18))]" />
+        <div className="relative grid gap-6 p-6 sm:p-8 lg:grid-cols-[1fr_auto] lg:items-end">
+          <div>
+            <Badge className="border-white/20 bg-white/14 text-white backdrop-blur">Kategori</Badge>
+            <h1 className="mt-4 text-4xl font-bold leading-tight tracking-normal sm:text-5xl">
+              {category.name}
+            </h1>
+            <p className="mt-3 max-w-2xl text-sm leading-6 text-white/74">
+              {category.description}
+            </p>
+          </div>
+          <div className="grid grid-cols-2 gap-3 text-sm sm:min-w-72">
+            <div className="rounded-lg border border-white/14 bg-white/10 p-4 backdrop-blur">
+              <p className="text-2xl font-bold">{categoryProducts.length.toLocaleString("tr-TR")}</p>
+              <p className="mt-1 text-white/68">ürün gösteriliyor</p>
+            </div>
+            <div className="rounded-lg border border-white/14 bg-white/10 p-4 backdrop-blur">
+              <p className="text-2xl font-bold">0 TL</p>
+              <p className="mt-1 text-white/68">gerçek ödeme</p>
+            </div>
+          </div>
+        </div>
       </section>
 
       <ProductListing

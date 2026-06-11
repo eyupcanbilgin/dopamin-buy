@@ -5,6 +5,7 @@ import { z } from "zod";
 import { requireAdmin } from "@/lib/admin-auth";
 import { createAdminAuditLog } from "@/lib/admin-audit";
 import { adPlacementOptions, getAdPlacementById } from "@/lib/ad-config";
+import { optionalAdHrefSchema } from "@/lib/ad-validation";
 import { getPrisma } from "@/lib/prisma";
 import { slugifyTurkish } from "@/lib/slug";
 
@@ -21,7 +22,7 @@ const adSlotSchema = z.object({
   label: z.enum(["Reklam", "Sponsorlu"]).default("Sponsorlu"),
   sponsorName: z.string().max(80).optional().nullable(),
   ctaLabel: z.string().max(40).optional().nullable(),
-  ctaHref: z.string().max(240).optional().nullable(),
+  ctaHref: optionalAdHrefSchema,
   frequencyCap: z.coerce.number().int().min(0).max(24).default(3),
   isActive: z.boolean().default(true),
   sortOrder: z.coerce.number().int().min(0).max(999).default(0),

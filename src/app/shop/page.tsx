@@ -22,7 +22,7 @@ import { buildBreadcrumbJsonLd, buildCategoryCollectionJsonLd, buildMetadata } f
 export const metadata: Metadata = buildMetadata({
   title: "Sanal Mağaza | Harcamadan keşfet",
   description:
-    "Dopamin Sanal Mağaza ürünleri keşfetme, sepete ekleme ve Sanal Sipariş hissini gerçek ödeme veya teslimat olmadan deneyimletir.",
+    "Doply Sanal Mağaza ürünleri keşfetme, sepete ekleme ve Sanal Sipariş hissini gerçek ödeme veya teslimat olmadan deneyimletir.",
   path: "/shop",
   keywords: ["sanal mağaza", "sanal sepet", "ürün simülasyonu"],
 });
@@ -60,11 +60,11 @@ export default async function ShopPage() {
       <JsonLd
         data={[
           buildBreadcrumbJsonLd([
-            { name: "Dopamin", path: "/" },
+            { name: "Doply", path: "/" },
             { name: "Sanal Mağaza", path: "/shop" },
           ]),
           buildCategoryCollectionJsonLd({
-            name: "Dopamin Sanal Mağaza",
+            name: "Doply Sanal Mağaza",
             description:
               "Gerçek satış veya teslimat oluşturmayan alışveriş simülasyonu vitrini.",
             path: "/shop",
@@ -184,7 +184,7 @@ export default async function ShopPage() {
         <SectionHeader
           eyebrow="Topluluk ritmi"
           title="Bugün harcamadan tamamlanan sepetler"
-          description="Dopamin’de kapanış, ürünü seçme hissini bütçe etkisi olmadan bitirmeye odaklanır."
+          description="Doply’de kapanış, ürünü seçme hissini bütçe etkisi olmadan bitirmeye odaklanır."
         />
         <div className="grid gap-3 sm:grid-cols-3">
           {[

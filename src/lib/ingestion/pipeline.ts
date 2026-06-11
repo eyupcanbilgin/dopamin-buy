@@ -112,7 +112,7 @@ export class ProductImportPipeline {
   }
 
   private async getBrand(name?: string) {
-    const cacheKey = createDeduplicationKey(name || "Dopamin Studio", undefined, "brand");
+    const cacheKey = createDeduplicationKey(name || "Doply Studio", undefined, "brand");
     const cached = this.brandCache.get(cacheKey);
 
     if (cached) {

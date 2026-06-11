@@ -79,10 +79,10 @@ export default function CheckoutSuccessPage() {
 
   return (
     <main className="container py-8">
-      <section className="premium-card p-6">
+      <section className="overflow-hidden rounded-lg border border-saved/20 bg-[linear-gradient(135deg,hsl(var(--card)),hsl(var(--saved)/0.08))] p-6 shadow-soft">
         <div className="grid gap-8 lg:grid-cols-[1fr_340px] lg:items-start">
           <div>
-            <span className="flex h-14 w-14 items-center justify-center rounded-md bg-success text-success-foreground">
+            <span className="flex h-14 w-14 items-center justify-center rounded-md bg-success text-success-foreground shadow-lift">
               <CheckCircle2 className="h-8 w-8" aria-hidden="true" />
             </span>
             <h1 className="mt-5 text-3xl font-bold tracking-normal">
@@ -92,7 +92,7 @@ export default function CheckoutSuccessPage() {
               Gerçek para harcamadan sipariş hissini tamamladın. Ödeme alınmadı, teslimat
               hazırlanmadı, mağaza işlemi başlatılmadı.
             </p>
-            <div className="mt-6 grid gap-3 rounded-lg bg-secondary/55 p-4 text-sm sm:grid-cols-3">
+            <div className="mt-6 grid gap-3 rounded-lg border bg-card/72 p-4 text-sm shadow-sm sm:grid-cols-3">
               <div>
                 <p className="text-muted-foreground">Sanal Sipariş no</p>
                 <p className="mt-1 font-bold">{latestOrder.id}</p>
@@ -108,7 +108,7 @@ export default function CheckoutSuccessPage() {
                 </p>
               </div>
             </div>
-            <div className="mt-4 grid gap-3 rounded-lg border bg-background p-4 text-sm sm:grid-cols-2">
+            <div className="mt-4 grid gap-3 rounded-lg border bg-background p-4 text-sm shadow-sm sm:grid-cols-2">
               <div>
                 <p className="text-muted-foreground">Dürtü önce</p>
                 <p className="mt-1 text-xl font-bold text-navy">
@@ -133,7 +133,7 @@ export default function CheckoutSuccessPage() {
       <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_360px]">
         <section className="space-y-5">
           <UrgeCheckIn mode="after" title="Şimdi kaç / 10?" />
-          <Card>
+          <Card className="shadow-card">
             <CardHeader>
               <CardTitle>Dürtü kapanışı</CardTitle>
             </CardHeader>
@@ -154,13 +154,13 @@ export default function CheckoutSuccessPage() {
                 </p>
               ) : (
                 <p className="text-sm leading-6 text-muted-foreground">
-                  Dürtü seviyen yükseldi. Dopamin tıbbi tedavi değildir; zorlayıcı hislerde profesyonel
+                  Dürtü seviyen yükseldi. Doply tıbbi tedavi değildir; zorlayıcı hislerde profesyonel
                   destek almak iyi bir seçenek olabilir.
                 </p>
               )}
             </CardContent>
           </Card>
-          <Card>
+          <Card className="shadow-card">
             <CardHeader>
               <CardTitle>Kapanış aksiyonları</CardTitle>
             </CardHeader>
@@ -222,7 +222,7 @@ export default function CheckoutSuccessPage() {
         </section>
 
         <aside className="space-y-4 lg:sticky lg:top-24 lg:self-start">
-          <Card>
+          <Card className="shadow-card">
             <CardHeader>
               <CardTitle>Sanal sepet içeriği</CardTitle>
             </CardHeader>

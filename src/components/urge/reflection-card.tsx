@@ -64,7 +64,7 @@ export function ReflectionCard() {
       </div>
       <div className="mt-4 flex items-center justify-between gap-3">
         <p className="text-xs leading-5 text-muted-foreground">
-          Dopamin tıbbi değerlendirme yapmaz; bu alan yalnızca kişisel farkındalık notudur.
+          Doply tıbbi değerlendirme yapmaz; bu alan yalnızca kişisel farkındalık notudur.
         </p>
         <Button type="button" onClick={saveReflection}>
           Kaydet

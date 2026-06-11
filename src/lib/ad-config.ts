@@ -67,7 +67,7 @@ export const sensitiveAdExcludedPathPrefixes = [
 ];
 
 export const premiumNoAdsFlagPlaceholder =
-  process.env.NEXT_PUBLIC_DOPAMIN_PREMIUM_NO_ADS === "true";
+  process.env.NEXT_PUBLIC_DOPLY_PREMIUM_NO_ADS === "true";
 
 export function isAdExcludedPath(pathname: string) {
   return sensitiveAdExcludedPathPrefixes.some(

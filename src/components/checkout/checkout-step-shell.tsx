@@ -60,13 +60,13 @@ export function CheckoutStepShell({
             {description}
           </p>
         </div>
-        <span className="text-sm font-semibold text-muted-foreground">
+        <span className="rounded-md border bg-card px-3 py-2 text-sm font-semibold text-muted-foreground shadow-sm">
           {Math.round(progress)}% simülasyon tamamlandı
         </span>
       </div>
 
-      <div className="mb-6 premium-card p-4">
-        <nav aria-label="Sanal Sipariş adımları" className="flex flex-wrap gap-2">
+      <div className="mb-6 rounded-lg border bg-card p-4 shadow-card">
+        <nav aria-label="Sanal Sipariş adımları" className="grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
           {checkoutSteps.map((item, index) => {
             const isActive = item.id === step;
             const isPast = index < activeIndex;
@@ -77,12 +77,20 @@ export function CheckoutStepShell({
                 href={item.href}
                 aria-current={isActive ? "step" : undefined}
                 className={cn(
-                  "focus-ring rounded-md px-3 py-2 text-xs font-semibold transition",
-                  isActive && "bg-primary text-primary-foreground shadow-glow",
-                  isPast && !isActive && "bg-saved/10 text-saved",
-                  !isActive && !isPast && "bg-muted text-muted-foreground",
+                  "focus-ring flex items-center gap-2 rounded-md border px-3 py-2 text-xs font-semibold transition",
+                  isActive && "border-primary bg-primary text-primary-foreground shadow-glow",
+                  isPast && !isActive && "border-saved/20 bg-saved/10 text-saved",
+                  !isActive && !isPast && "border-border bg-muted text-muted-foreground",
                 )}
               >
+                <span
+                  className={cn(
+                    "flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px]",
+                    isActive ? "bg-white/20" : "bg-background/80",
+                  )}
+                >
+                  {index + 1}
+                </span>
                 {item.label}
               </Link>
             );

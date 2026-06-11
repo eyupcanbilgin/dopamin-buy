@@ -73,7 +73,7 @@ describe("Cart and Simulation Store", () => {
       city: "İstanbul",
       district: "Kadıköy",
       addressType: "home" as const,
-      fictionalAddress: "Sakin Ev Rotası, Dopamin Simülasyon Alanı, Kadıköy / İstanbul",
+      fictionalAddress: "Sakin Ev Rotası, Doply Simülasyon Alanı, Kadıköy / İstanbul",
     };
     useCartStore.getState().setDelivery(deliveryMock);
     expect(useCartStore.getState().delivery).toEqual(deliveryMock);
@@ -82,7 +82,7 @@ describe("Cart and Simulation Store", () => {
     useCartStore.getState().setShipping(shippingMock);
     expect(useCartStore.getState().shipping).toEqual(shippingMock);
 
-    const paymentMock = { methodId: "simulated-dopamin-card" as const };
+    const paymentMock = { methodId: "simulated-doply-card" as const };
     useCartStore.getState().setPayment(paymentMock);
     expect(useCartStore.getState().payment).toEqual(paymentMock);
   });
@@ -114,10 +114,10 @@ describe("Cart and Simulation Store", () => {
         city: "Ankara",
         district: "Çankaya",
         addressType: "random" as const,
-        fictionalAddress: "Rahatlama Durağı, Dopamin Simülasyon Alanı, Çankaya / Ankara",
+        fictionalAddress: "Rahatlama Durağı, Doply Simülasyon Alanı, Çankaya / Ankara",
       },
       shipping: { optionId: "standard-simulation" as const },
-      payment: { methodId: "simulated-dopamin-card" as const },
+      payment: { methodId: "simulated-doply-card" as const },
       journalEntryAdded: false,
       waitingUntil: null,
       delayMode: null,
@@ -134,5 +134,54 @@ describe("Cart and Simulation Store", () => {
     expect(state.delivery).toBeNull();
     expect(state.shipping).toBeNull();
     expect(state.payment).toBeNull();
+  });
+
+  it("should not persist reflection text or precise delivery details", () => {
+    const mockOrder = {
+      id: "SNL-2026-PRIVATE",
+      createdAt: new Date().toISOString(),
+      lines: [
+        {
+          productId: "prd-001",
+          quantity: 1,
+          name: "Test Product",
+          categorySlug: "teknoloji",
+          categoryName: "Teknoloji",
+          price: 100,
+          image: "/test.jpg",
+        },
+      ],
+      total: 100,
+      avoidedSpending: 100,
+      urgeBefore: 8,
+      urgeAfter: null,
+      triggers: ["stress" as const],
+      delivery: {
+        city: "İstanbul",
+        district: "Kadıköy",
+        addressType: "home" as const,
+        fictionalAddress: "Kişisel hisler içeren sanal rota, Kadıköy / İstanbul",
+      },
+      shipping: { optionId: "standard-simulation" as const },
+      payment: { methodId: "simulated-doply-card" as const },
+      journalEntryAdded: false,
+      waitingUntil: null,
+      delayMode: null,
+      cooldownUntil: null,
+      reflection: {
+        whyWanted: "kişisel stres notu",
+        needed: "emin değilim",
+        feeling: "yorgun",
+        updatedAt: new Date().toISOString(),
+      },
+    };
+
+    useCartStore.getState().completeSimulation(mockOrder);
+
+    const persisted = JSON.parse(window.localStorage.getItem("doply-simulation-session") ?? "{}");
+    expect(persisted.state.latestOrder.reflection).toBeNull();
+    expect(persisted.state.latestOrder.delivery.city).toBe("Sanal Şehir");
+    expect(JSON.stringify(persisted)).not.toContain("kişisel stres notu");
+    expect(JSON.stringify(persisted)).not.toContain("Kadıköy");
   });
 });

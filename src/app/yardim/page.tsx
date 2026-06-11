@@ -13,31 +13,31 @@ const faqs = [
   {
     question: "Bu gerçek bir alışveriş sitesi mi?",
     answer:
-      "Hayır. Dopamin, alışveriş hissini gerçek para harcamadan yaşatan bir simülasyon platformudur. Ürünler, sepet ve Sanal Sipariş akışı duygusal kapanış için tasarlanır; gerçek satın alma oluşturmaz.",
+      "Hayır. Doply, alışveriş hissini gerçek para harcamadan yaşatan bir simülasyon platformudur. Ürünler, sepet ve Sanal Sipariş akışı duygusal kapanış için tasarlanır; gerçek satın alma oluşturmaz.",
   },
   {
     question: "Kart bilgilerim istenir mi?",
     answer:
-      "Hayır. Dopamin kart numarası, CVV, son kullanma tarihi, kimlik numarası veya banka bilgisi istemez. Ödeme adımı yalnızca Ödeme Simülasyonu olarak çalışır.",
+      "Hayır. Doply kart numarası, CVV, son kullanma tarihi, kimlik numarası veya banka bilgisi istemez. Ödeme adımı yalnızca Ödeme Simülasyonu olarak çalışır.",
   },
   {
     question: "Sipariş gelir mi?",
     answer:
-      "Hayır. Dopamin gerçek teslimat başlatmaz. Teslimat adımında açık adres toplanmaz; şehir, ilçe ve adres tipiyle güvenli bir kurgu adres oluşturulur.",
+      "Hayır. Doply gerçek teslimat başlatmaz. Teslimat adımında açık adres toplanmaz; şehir, ilçe ve adres tipiyle güvenli bir kurgu adres oluşturulur.",
   },
   {
     question: "Bu uygulama ne işe yarar?",
     answer:
-      "Dopamin, alışveriş dürtüsünü fark etmene, sepet deneyimini harcama yapmadan tamamlamana ve koruduğun tutarı görmene yardımcı olan destekleyici bir araçtır. Tıbbi tedavi yerine geçmez.",
+      "Doply, alışveriş dürtüsünü fark etmene, sepet deneyimini harcama yapmadan tamamlamana ve koruduğun tutarı görmene yardımcı olan destekleyici bir araçtır. Tıbbi tedavi yerine geçmez.",
   },
 ];
 
 export const metadata: Metadata = buildMetadata({
-  title: "Yardım ve SSS | Dopamin simülasyon açıklamaları",
+  title: "Yardım ve SSS | Doply simülasyon açıklamaları",
   description:
-    "Dopamin'in gerçek ödeme almadığını, gerçek teslimat yapmadığını ve Sanal Sipariş akışının nasıl çalıştığını açıklayan SSS sayfası.",
+    "Doply'nin gerçek ödeme almadığını, gerçek teslimat yapmadığını ve Sanal Sipariş akışının nasıl çalıştığını açıklayan SSS sayfası.",
   path: "/yardim",
-  keywords: ["Dopamin SSS", "sanal sipariş", "kart bilgisi istenir mi"],
+  keywords: ["Doply SSS", "sanal sipariş", "kart bilgisi istenir mi"],
 });
 
 export default function HelpPage() {
@@ -46,7 +46,7 @@ export default function HelpPage() {
       <JsonLd
         data={[
           buildBreadcrumbJsonLd([
-            { name: "Dopamin", path: "/" },
+            { name: "Doply", path: "/" },
             { name: "Yardım ve SSS", path: "/yardim" },
           ]),
           buildFaqJsonLd(faqs),
@@ -61,7 +61,7 @@ export default function HelpPage() {
             Yardım ve SSS
           </h1>
           <p className="mt-4 text-base leading-7 text-muted-foreground">
-            Dopamin’in simülasyon yapısını sakin ve net şekilde açıklayan kısa cevaplar.
+            Doply’nin simülasyon yapısını sakin ve net şekilde açıklayan kısa cevaplar.
             Mağaza deneyimi gerçekçi hissettirir; ödeme, teslimat ve sipariş sonuçları gerçek
             değildir.
           </p>
@@ -89,7 +89,7 @@ export default function HelpPage() {
             Kısa özet
           </p>
           <p className="mt-2 text-sm leading-6 text-muted-foreground">
-            Dopamin gerçek ödeme almaz, gerçek teslimat yapmaz, gerçek sipariş oluşturmaz ve tam
+            Doply gerçek ödeme almaz, gerçek teslimat yapmaz, gerçek sipariş oluşturmaz ve tam
             açık adres ya da kart bilgisi toplamaz.
           </p>
           <div className="mt-5">

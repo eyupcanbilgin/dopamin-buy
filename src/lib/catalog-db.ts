@@ -14,6 +14,7 @@ import {
   type Product,
 } from "@/lib/catalog";
 import { getPrisma } from "@/lib/prisma";
+import { getSafeProductGallery } from "@/lib/product-image";
 import { SYNTHETIC_CATEGORY_TAXONOMY } from "@/lib/synthetic-catalog";
 
 type ProductWithRelations = Prisma.ProductGetPayload<{
@@ -127,9 +128,7 @@ const productInclude = {
 };
 
 function mapPrismaProduct(product: ProductWithRelations): Product {
-  const gallery = product.images.length > 0
-    ? product.images.map((image) => image.url)
-    : [`https://placehold.co/900x675/F7F1E8/243047/png?text=${encodeURIComponent(product.name)}`];
+  const gallery = getSafeProductGallery(product.images.map((image) => image.url), product.name);
   const price = Math.round(product.priceCents / 100);
   const compareAtPrice = product.compareAtPriceCents
     ? Math.round(product.compareAtPriceCents / 100)

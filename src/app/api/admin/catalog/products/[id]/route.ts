@@ -28,6 +28,10 @@ const productUpdateSchema = z.object({
   images: z.array(z.string().trim().url()).max(12).default([]),
 });
 
+const routeParamsSchema = z.object({
+  id: z.string().trim().min(1).max(120),
+});
+
 type RouteContext = {
   params: Promise<{ id: string }>;
 };
@@ -39,8 +43,14 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
     return adminError;
   }
 
-  const { id } = await context.params;
-  const parsed = productUpdateSchema.safeParse(await request.json());
+  const params = routeParamsSchema.safeParse(await context.params);
+
+  if (!params.success) {
+    return NextResponse.json({ error: "Ürün kimliği geçersiz." }, { status: 400 });
+  }
+
+  const payload = await request.json().catch(() => null);
+  const parsed = productUpdateSchema.safeParse(payload);
 
   if (!parsed.success) {
     return NextResponse.json(
@@ -52,6 +62,7 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
     );
   }
 
+  const { id } = params.data;
   const data = parsed.data;
   const prisma = getPrisma();
   const slug = slugifyTurkish(data.slug || data.name);
@@ -93,7 +104,7 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
             slug,
             data.merchantName,
             data.simulatedDeliveryEstimate,
-            "Dopamin",
+            "Doply",
             "sanal sipariş",
           ]
             .filter(Boolean)

@@ -26,7 +26,7 @@ export const shippingSimulationSchema = z.object({
 });
 
 export const paymentSimulationSchema = z.object({
-  methodId: z.enum(["simulated-dopamin-card", "simulated-cash", "complete-without-spending"], {
+  methodId: z.enum(["simulated-doply-card", "simulated-cash", "complete-without-spending"], {
     required_error: "Bir sanal ödeme yöntemi seç.",
   }),
   simulationConsent: z.boolean().refine((value) => value, {

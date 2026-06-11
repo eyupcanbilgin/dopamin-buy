@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import type { Product } from "@/lib/catalog";
+import { getEnv } from "@/lib/env";
 
 export type FaqItem = {
   question: string;
@@ -19,11 +20,11 @@ type MetadataInput = {
 };
 
 export const siteConfig = {
-  name: "Dopamin",
-  url: trimTrailingSlash(process.env.NEXT_PUBLIC_SITE_URL ?? "https://dopamin.app"),
+  name: "Doply",
+  url: trimTrailingSlash(getEnv().NEXT_PUBLIC_SITE_URL),
   locale: "tr_TR",
   description:
-    "Dopamin, alışveriş hissini gerçek ödeme, gerçek teslimat ve gerçek sipariş olmadan simüle eden etik bir platformdur.",
+    "Doply, alışveriş hissini gerçek ödeme, gerçek teslimat ve gerçek sipariş olmadan simüle eden etik bir platformdur.",
 };
 
 export function absoluteUrl(path = "/") {
@@ -39,7 +40,7 @@ export function buildMetadata({
   description,
   path,
   image = "/opengraph-image",
-  imageAlt = "Dopamin alışveriş simülasyonu",
+  imageAlt = "Doply alışveriş simülasyonu",
   keywords = [],
   type = "website",
   noIndex = false,
@@ -52,7 +53,7 @@ export function buildMetadata({
     title,
     description,
     keywords: [
-      "Dopamin",
+      "Doply",
       "alışveriş simülasyonu",
       "sanal sipariş",
       "gerçek ödeme yok",
@@ -222,7 +223,7 @@ export function buildSimulationProductPageJsonLd(product: Product) {
     "@type": "WebPage",
     name: `${product.name} sanal ürün simülasyonu`,
     description:
-      `${product.shortDescription} Dopamin bu sayfada gerçek satış, stok, teslimat veya ödeme vaadi sunmaz.`,
+      `${product.shortDescription} Doply bu sayfada gerçek satış, stok, teslimat veya ödeme vaadi sunmaz.`,
     url: absoluteUrl(`/urun/${product.slug}`),
     inLanguage: "tr-TR",
     isPartOf: {

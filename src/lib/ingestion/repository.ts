@@ -61,7 +61,7 @@ export class PrismaProductImportRepository implements ProductImportRepository {
       create: {
         name: cleanedName,
         slug,
-        description: `${cleanedName}, Dopamin katalog simülasyonu için yetkili veya sentetik kaynaklardan kullanılan marka adıdır.`,
+        description: `${cleanedName}, Doply katalog simülasyonu için yetkili veya sentetik kaynaklardan kullanılan marka adıdır.`,
         isFictional: true,
       },
       select: { id: true, name: true, slug: true },
@@ -71,7 +71,7 @@ export class PrismaProductImportRepository implements ProductImportRepository {
   async upsertProduct({ dto, slug, category, brand }: UpsertProductInput) {
     const description =
       dto.description ||
-      `${dto.title}, Dopamin Sanal Sipariş deneyiminde gerçek ödeme veya teslimat oluşturmadan incelenen simülasyon ürünüdür.`;
+      `${dto.title}, Doply Sanal Sipariş deneyiminde gerçek ödeme veya teslimat oluşturmadan incelenen simülasyon ürünüdür.`;
     const shortDescription =
       dto.shortDescription ||
       `${category.name} kategorisinde güvenli sanal alışveriş hissi için katalog kaydı.`;

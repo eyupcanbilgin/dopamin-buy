@@ -188,7 +188,7 @@ export function UrgeDashboard() {
             <h2 className="text-lg font-bold text-navy">Toplam korunan tutar</h2>
             <p className="mt-2 text-sm leading-6 text-muted-foreground">
               Bugüne kadar tamamladığın simülasyonlarda gerçek para harcamadan kapanan sepet
-              değeri. Dopamin tıbbi tedavi sunmaz; bu panel bütçe farkındalığı için tasarlanmıştır.
+              değeri. Doply tıbbi tedavi sunmaz; bu panel bütçe farkındalığı için tasarlanmıştır.
             </p>
           </div>
           <p className="text-4xl font-bold text-saved">{formatCurrency(stats.saved.total)}</p>

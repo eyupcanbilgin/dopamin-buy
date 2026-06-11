@@ -24,16 +24,16 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   ...buildMetadata({
-    title: "Dopamin | Etik alışveriş simülasyonu",
+    title: "Doply | Etik alışveriş simülasyonu",
     description:
-      "Dopamin, online alışveriş dürtüsünü gerçek ödeme, gerçek teslimat ve gerçek sipariş olmadan tamamlamaya yardımcı olan etik bir simülasyon platformudur.",
+      "Doply, online alışveriş dürtüsünü gerçek ödeme, gerçek teslimat ve gerçek sipariş olmadan tamamlamaya yardımcı olan etik bir simülasyon platformudur.",
     path: "/",
     keywords: ["online alışveriş dürtüsü", "etik alışveriş", "ödeme simülasyonu"],
   }),
   applicationName: siteConfig.name,
   title: {
-    default: "Dopamin | Etik alışveriş simülasyonu",
-    template: "%s | Dopamin",
+    default: "Doply | Etik alışveriş simülasyonu",
+    template: "%s | Doply",
   },
 };
 

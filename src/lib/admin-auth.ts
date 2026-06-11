@@ -1,20 +1,34 @@
 import { timingSafeEqual } from "crypto";
 import { NextResponse, type NextRequest } from "next/server";
 
-export function requireAdmin(request: NextRequest) {
-  const configuredKey = process.env.DOPAMIN_ADMIN_KEY;
+import { getAdminKey } from "@/lib/env";
+import { adminApiRateLimit, rateLimitRequest, type RateLimitOptions } from "@/lib/rate-limit";
+
+type AdminGuardOptions = {
+  rateLimit?: RateLimitOptions | false;
+};
+
+export function requireAdmin(request: NextRequest, options: AdminGuardOptions = {}) {
+  const rateLimit = options.rateLimit === undefined ? adminApiRateLimit : options.rateLimit;
+  const rateLimitError = rateLimit ? rateLimitRequest(request, rateLimit) : null;
+
+  if (rateLimitError) {
+    return rateLimitError;
+  }
+
+  const configuredKey = getAdminKey();
 
   if (!configuredKey) {
     return NextResponse.json(
       {
         error:
-          "Admin panel kapalı. DOPAMIN_ADMIN_KEY ortam değişkenini tanımladıktan sonra tekrar dene.",
+          "Admin panel kapalı. DOPLY_ADMIN_KEY ortam değişkenini tanımladıktan sonra tekrar dene.",
       },
       { status: 503 },
     );
   }
 
-  const providedKey = request.headers.get("x-dopamin-admin-key") || "";
+  const providedKey = request.headers.get("x-doply-admin-key") || "";
 
   if (!safeCompare(providedKey, configuredKey)) {
     return NextResponse.json(

@@ -8,7 +8,7 @@ import { buildMetadata } from "@/lib/seo";
 
 export const metadata = buildMetadata({
   title: "Reklam Alanları Admin",
-  description: "Dopamin reklam alanı yapılandırma paneli.",
+  description: "Doply reklam alanı yapılandırma paneli.",
   path: "/admin/ads",
   noIndex: true,
 });

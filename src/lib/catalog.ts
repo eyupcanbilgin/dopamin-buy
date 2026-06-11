@@ -93,14 +93,13 @@ export const products: Product[] = [
     rating: 4.7,
     reviewCount: 148,
     image:
-      "https://images.unsplash.com/photo-1520975922284-8b456906c813?auto=format&fit=crop&w=900&q=80",
+      "https://images.unsplash.com/photo-1496747611176-843222e1e57c?auto=format&fit=crop&w=900&q=80",
     gallery: [
-      "https://images.unsplash.com/photo-1520975922284-8b456906c813?auto=format&fit=crop&w=900&q=80",
       "https://images.unsplash.com/photo-1496747611176-843222e1e57c?auto=format&fit=crop&w=900&q=80",
     ],
     shortDescription: "Hafif dokulu, şehir temposuna uygun zamansız dış katman.",
     description:
-      "Dopamin kataloğundaki bu sanal trençkot, gerçek bir satın alma oluşturmadan stil kararını prova etmek için tasarlandı.",
+      "Doply kataloğundaki bu sanal trençkot, gerçek bir satın alma oluşturmadan stil kararını prova etmek için tasarlandı.",
     tags: ["Sanal Sepet", "Premium His", "Gerçek Ödeme Yok"],
     specs: ["Keten karışım hissi", "Rahat kesim", "Mevsim geçişi görünümü"],
     reflection: "Bunu gerçekten haftada kaç kez giyerdin?",
@@ -243,9 +242,8 @@ export const products: Product[] = [
     rating: 4.5,
     reviewCount: 121,
     image:
-      "https://images.unsplash.com/photo-1599447292461-3c5dc9c6b96e?auto=format&fit=crop&w=900&q=80",
+      "https://images.unsplash.com/photo-1510894347713-fc3ed6fdf539?auto=format&fit=crop&w=900&q=80",
     gallery: [
-      "https://images.unsplash.com/photo-1599447292461-3c5dc9c6b96e?auto=format&fit=crop&w=900&q=80",
       "https://images.unsplash.com/photo-1510894347713-fc3ed6fdf539?auto=format&fit=crop&w=900&q=80",
     ],
     shortDescription: "Evde esneme rutini için sade ve tutuşlu mat hissi.",

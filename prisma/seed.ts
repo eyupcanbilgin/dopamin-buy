@@ -4,7 +4,7 @@ import { PrismaPg } from "@prisma/adapter-pg";
 const databaseUrl = process.env.DATABASE_URL;
 
 if (!databaseUrl) {
-  throw new Error("DATABASE_URL is required to seed Dopamin.");
+  throw new Error("DATABASE_URL is required to seed Doply.");
 }
 
 const adapter = new PrismaPg(databaseUrl);
@@ -217,13 +217,13 @@ async function main() {
         where: { slug },
         update: {
           name,
-          description: `${name}, Dopamin için oluşturulmuş kurgusal bir markadır.`,
+          description: `${name}, Doply için oluşturulmuş kurgusal bir markadır.`,
           isFictional: true,
         },
         create: {
           name,
           slug,
-          description: `${name}, Dopamin için oluşturulmuş kurgusal bir markadır.`,
+          description: `${name}, Doply için oluşturulmuş kurgusal bir markadır.`,
           isFictional: true,
         },
       }),
@@ -244,7 +244,7 @@ async function main() {
       const compareAtPriceCents = productIndex % 3 === 0 ? priceCents + 45_000 : null;
       const dopamineScore = new Prisma.Decimal((4.1 + (productIndex % 8) * 0.1).toFixed(1));
       const reviewCount = 24 + (productIndex * 13) % 220;
-      const description = `${productName}, Dopamin Sanal Sipariş deneyiminde alışveriş dürtüsünü güvenli alanda tamamlamak için kullanılan kurgusal bir üründür. Gerçek ödeme, teslimat veya ticari kayıt oluşturmaz.`;
+      const description = `${productName}, Doply Sanal Sipariş deneyiminde alışveriş dürtüsünü güvenli alanda tamamlamak için kullanılan kurgusal bir üründür. Gerçek ödeme, teslimat veya ticari kayıt oluşturmaz.`;
 
       const product = await prisma.product.upsert({
         where: { slug },
@@ -330,14 +330,14 @@ async function main() {
       {
         slug: "etik-ilkeler",
         type: "ETHICS",
-        title: "Dopamin etik ilkeleri",
+        title: "Doply etik ilkeleri",
         excerpt: "Simülasyon, şeffaflık ve harcamadan kapanış.",
-        body: "Dopamin gerçek ödeme, teslimat, fatura veya ticari kayıt oluşturmaz. Platform alışveriş dürtüsünü güvenli bir simülasyon alanında tamamlamaya yardımcı olur.",
+        body: "Doply gerçek ödeme, teslimat, fatura veya ticari kayıt oluşturmaz. Platform alışveriş dürtüsünü güvenli bir simülasyon alanında tamamlamaya yardımcı olur.",
       },
       {
         slug: "yardim",
         type: "HELP",
-        title: "Dopamin nasıl çalışır?",
+        title: "Doply nasıl çalışır?",
         excerpt: "Sanal sepet, teslimat simülasyonu, ödeme simülasyonu ve kapanış.",
         body: "Ürünleri keşfeder, Sanal Sipariş akışını tamamlarsın. Kart bilgisi veya açık adres istenmez. Son ekranda kaçınmış olduğun harcama gösterilir.",
       },
@@ -345,7 +345,7 @@ async function main() {
         slug: "gizlilik",
         type: "PRIVACY",
         title: "Gizlilik yaklaşımı",
-        excerpt: "Dopamin hassas ödeme veya açık adres verisi toplamaz.",
+        excerpt: "Doply hassas ödeme veya açık adres verisi toplamaz.",
         body: "Teslimat simülasyonu için yalnızca şehir, ilçe, adres tipi ve güvenli kurgusal adres bilgisi kullanılabilir. Gerçek kart verisi saklanmaz.",
       },
     ],

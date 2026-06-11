@@ -15,7 +15,10 @@ type HeroCarouselProps = {
 };
 
 export function HeroCarousel({ products }: HeroCarouselProps) {
-  const slides = useMemo(() => products.slice(0, 4), [products]);
+  const slides = useMemo(() => {
+    const polishedProducts = products.filter((product) => !product.image.includes("placehold.co"));
+    return (polishedProducts.length > 0 ? polishedProducts : products).slice(0, 4);
+  }, [products]);
   const [activeIndex, setActiveIndex] = useState(0);
   const activeProduct = slides[activeIndex] ?? slides[0];
 
@@ -61,7 +64,7 @@ export function HeroCarousel({ products }: HeroCarouselProps) {
       <div className="container relative grid min-h-[520px] gap-8 py-10 lg:grid-cols-[1fr_420px] lg:items-center">
         <div className="max-w-3xl">
           <p className="text-sm font-semibold uppercase tracking-[0.18em] text-dopamine">
-            Dopamin seçkisi
+            Doply seçkisi
           </p>
           <h1 className="mt-4 text-4xl font-bold leading-tight tracking-normal sm:text-6xl">
             Büyük vitrin hissi, sakin sepet deneyimi.
@@ -95,12 +98,13 @@ export function HeroCarousel({ products }: HeroCarouselProps) {
                 src={activeProduct.image}
                 alt={activeProduct.name}
                 fill
+                priority
                 sizes="(min-width: 1024px) 420px, 100vw"
                 className="object-cover"
               />
             </div>
             <div className="pt-4">
-              <p className="text-sm text-white/68">{activeProduct.merchantName ?? "Dopamin Vitrin"}</p>
+              <p className="text-sm text-white/68">{activeProduct.merchantName ?? "Doply Vitrin"}</p>
               <h2 className="mt-1 text-xl font-bold leading-6">{activeProduct.name}</h2>
               <div className="mt-3 flex items-end justify-between gap-4">
                 <p className="text-2xl font-bold">{formatCurrency(activeProduct.price)}</p>

@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
 
 export const runtime = "edge";
-export const alt = "Dopamin alışveriş simülasyonu";
+export const alt = "Doply alışveriş simülasyonu";
 export const size = {
   width: 1200,
   height: 630,
@@ -36,7 +36,7 @@ export default function Image() {
           }}
         >
           <div style={{ color: "#584dd6", fontSize: 30, fontWeight: 700 }}>
-            Dopamin · Simülasyon Modu
+            Doply · Simülasyon Modu
           </div>
           <div style={{ fontSize: 78, fontWeight: 800, letterSpacing: 0, lineHeight: 1.05 }}>
             Alışveriş hissi, gerçek ödeme olmadan.

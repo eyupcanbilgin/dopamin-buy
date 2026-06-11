@@ -16,6 +16,7 @@ import {
   type AdSlotVariant,
   type PublicAdSlot,
 } from "@/lib/ad-config";
+import { isExternalAdHref, normalizeSafeAdHref } from "@/lib/ad-url";
 import { cn } from "@/lib/utils";
 
 type AdSlotProps = {
@@ -48,7 +49,7 @@ export function AdSlot({
   const [loadState, setLoadState] = useState<LoadState>(
     loading || (!disableRemoteLoad && slot === undefined) ? "loading" : "ready",
   );
-  const storageKey = useMemo(() => `dopamin-ad-frequency:${placement}:${todayKey()}`, [placement]);
+  const storageKey = useMemo(() => `doply-ad-frequency:${placement}:${todayKey()}`, [placement]);
 
   useEffect(() => {
     if (premiumNoAdsFlagPlaceholder || isAdExcludedPath(pathname)) {
@@ -135,12 +136,13 @@ export function AdSlot({
   }
 
   const hasSponsor = Boolean(resolvedSlot);
-  const displayTitle = resolvedSlot?.title ?? title ?? "Sponsorlu alan şu anda boş";
+  const displayTitle = resolvedSlot?.title ?? title ?? "Sakin mola alanı";
   const displayDescription =
     resolvedSlot?.body ??
     description ??
-    "Bu reklam alanı yalnızca açıkça etiketlenmiş, onaylı sponsor içeriği için ayrılmıştır.";
+    "Sponsorlu içerik olmadığı zaman ürün veya kampanya taklidi yerine sakin bir bilgi alanı gösterilir.";
   const label = resolvedSlot?.label ?? "Reklam";
+  const safeCtaHref = normalizeSafeAdHref(resolvedSlot?.ctaHref);
 
   return (
     <aside
@@ -177,12 +179,12 @@ export function AdSlot({
             {displayTitle}
           </h2>
           <p className="mt-2 text-sm leading-6 text-muted-foreground">{displayDescription}</p>
-          {resolvedSlot?.ctaHref && resolvedSlot.ctaLabel ? (
+          {safeCtaHref && resolvedSlot?.ctaLabel ? (
             <Button asChild variant="outline" size="sm" className="mt-4">
               <Link
-                href={resolvedSlot.ctaHref}
-                target={isExternalHref(resolvedSlot.ctaHref) ? "_blank" : undefined}
-                rel={isExternalHref(resolvedSlot.ctaHref) ? "sponsored noopener noreferrer" : "sponsored"}
+                href={safeCtaHref}
+                target={isExternalAdHref(safeCtaHref) ? "_blank" : undefined}
+                rel={isExternalAdHref(safeCtaHref) ? "sponsored noopener noreferrer" : "sponsored"}
                 onClick={() =>
                   trackAdEvent({
                     event: "click",
@@ -194,7 +196,7 @@ export function AdSlot({
                 }
               >
                 {resolvedSlot.ctaLabel}
-                {isExternalHref(resolvedSlot.ctaHref) ? (
+                {isExternalAdHref(safeCtaHref) ? (
                   <ExternalLink className="h-4 w-4" aria-hidden="true" />
                 ) : null}
               </Link>
@@ -202,7 +204,7 @@ export function AdSlot({
           ) : null}
           {!hasSponsor ? (
             <p className="mt-3 text-xs leading-5 text-muted-foreground">
-              Burada sponsor içeriği yokken ürün, indirim veya kampanya taklidi gösterilmez.
+              Doply, reklam alanlarını ürün kartı gibi gizlemez ve acele ettiren kampanya dili kullanmaz.
             </p>
           ) : null}
         </div>
@@ -286,10 +288,6 @@ function trackAdEvent(input: {
 
 function todayKey() {
   return new Date().toISOString().slice(0, 10);
-}
-
-function isExternalHref(href: string) {
-  return /^https?:\/\//i.test(href);
 }
 
 const variantClasses: Record<AdSlotVariant, string> = {

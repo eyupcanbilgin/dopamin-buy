@@ -1,5 +1,5 @@
 {
-  "name": "dopamin-buy",
+  "name": "doply",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -10,6 +10,8 @@
     "typecheck": "tsc --noEmit",
     "prisma:generate": "prisma generate",
     "prisma:validate": "prisma validate",
+    "prisma:migrate:deploy": "prisma migrate deploy",
+    "prisma:db:seed": "prisma db seed",
     "db:seed": "prisma db seed",
     "test": "vitest run",
     "test:watch": "vitest",

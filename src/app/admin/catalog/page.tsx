@@ -8,7 +8,7 @@ import { buildMetadata } from "@/lib/seo";
 
 export const metadata = buildMetadata({
   title: "Katalog Kalite Admin",
-  description: "Dopamin katalog kalite kontrol paneli.",
+  description: "Doply katalog kalite kontrol paneli.",
   path: "/admin/catalog",
   noIndex: true,
 });
@@ -17,7 +17,7 @@ export default function AdminCatalogPage() {
   return (
     <main className="container py-8">
       <section className="mb-6">
-        <Badge variant="calm">Dopamin katalog kalite kontrol</Badge>
+        <Badge variant="calm">Doply katalog kalite kontrol</Badge>
         <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div className="flex items-start gap-3">
             <span className="hidden h-12 w-12 items-center justify-center rounded-md bg-primary text-primary-foreground sm:flex">

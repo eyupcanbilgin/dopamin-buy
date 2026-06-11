@@ -1,6 +1,6 @@
 import { slugifyTurkish } from "@/lib/slug";
 
-export const DEFAULT_BRAND_NAME = "Dopamin Studio";
+export const DEFAULT_BRAND_NAME = "Doply Studio";
 
 export function cleanText(value: string) {
   return value
@@ -52,6 +52,6 @@ export function createDeduplicationKey(title: string, brand: string | undefined,
 }
 
 export function createPlaceholderImageUrl(title: string) {
-  const label = encodeURIComponent(cleanProductName(title).slice(0, 54) || "Dopamin");
+  const label = encodeURIComponent(cleanProductName(title).slice(0, 54) || "Doply");
   return `https://placehold.co/900x675/F7F1E8/243047/png?text=${label}`;
 }

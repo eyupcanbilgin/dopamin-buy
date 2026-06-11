@@ -96,16 +96,16 @@ export function ProductListing({
   const midFeedInsertionIndex = Math.min(8, Math.max(0, visibleProducts.length - 1));
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[260px_1fr]">
+    <div className="grid gap-6 lg:grid-cols-[272px_1fr]">
       <aside className="hidden lg:block">
         <div className="sticky top-24 grid gap-4">
-          <div className="rounded-lg border bg-card p-4 shadow-sm">{filterContent}</div>
+          <div className="rounded-lg border bg-card p-4 shadow-card">{filterContent}</div>
           {sidebarAdSlot}
         </div>
       </aside>
 
       <section aria-label="Ürün listesi" className="min-w-0">
-        <div className="mb-4 flex flex-col gap-3 rounded-lg border bg-card p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+        <div className="mb-4 flex flex-col gap-3 rounded-lg border bg-card p-4 shadow-card sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-sm font-semibold text-navy">
               {visibleProducts.length.toLocaleString("tr-TR")} ürün gösteriliyor
@@ -129,7 +129,7 @@ export function ProductListing({
               id="sort-products"
               value={sort}
               onChange={(event) => setSort(event.target.value as SortKey)}
-              className="focus-ring h-10 rounded-md border bg-background px-3 text-sm font-medium"
+              className="focus-ring h-10 rounded-md border bg-background px-3 text-sm font-medium shadow-sm"
             >
               <option value="popular">Popüler öneriler</option>
               <option value="discount">Sepet avantajı yüksek</option>
@@ -144,18 +144,20 @@ export function ProductListing({
           <ProductListingSkeleton />
         ) : visibleProducts.length > 0 ? (
           <motion.div layout className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
-            {visibleProducts.map((product, index) => (
-              <FragmentWithAd
-                key={product.id}
-                adSlot={midFeedAdSlot}
-                index={index}
-                insertionIndex={midFeedInsertionIndex}
-                product={<ProductCard product={product} />}
-              />
-            ))}
+            {visibleProducts.map((product, index) => {
+              const nodes = [
+                <ProductCard key={product.id} product={product} />,
+              ];
+
+              if (midFeedAdSlot && index === midFeedInsertionIndex) {
+                nodes.unshift(<Fragment key={`ad-${product.id}`}>{midFeedAdSlot}</Fragment>);
+              }
+
+              return nodes;
+            })}
           </motion.div>
         ) : (
-          <div className="rounded-lg border bg-card p-8 text-center shadow-sm">
+          <div className="rounded-lg border bg-card p-8 text-center shadow-card">
             <h2 className="text-xl font-bold text-navy">Bu filtrelerde ürün bulunamadı</h2>
             <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-muted-foreground">
               Fiyat aralığını veya kategori seçimini genişleterek daha fazla ürüne bakabilirsin.
@@ -187,7 +189,7 @@ export function ProductListing({
             onClick={() => setMobileFiltersOpen(false)}
           >
             <motion.div
-              className="absolute inset-x-0 bottom-0 max-h-[84svh] overflow-auto rounded-t-lg bg-card p-5 shadow-soft"
+              className="absolute inset-x-0 bottom-0 max-h-[84svh] overflow-auto rounded-t-lg border-t bg-card p-5 shadow-soft"
               initial={{ y: "100%" }}
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
@@ -315,7 +317,7 @@ function FilterPill({
       type="button"
       onClick={onClick}
       className={cn(
-        "focus-ring rounded-md border px-3 py-2 text-left text-sm font-medium transition",
+        "focus-ring rounded-md border px-3 py-2 text-left text-sm font-medium shadow-sm transition",
         active
           ? "border-primary bg-primary/10 text-primary"
           : "border-border bg-background text-muted-foreground hover:border-primary/50 hover:text-navy",
@@ -330,37 +332,17 @@ function ProductListingSkeleton() {
   return (
     <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4" aria-label="Ürünler yükleniyor">
       {Array.from({ length: 8 }).map((_, index) => (
-        <div key={index} className="rounded-lg border bg-card p-3">
-          <Skeleton className="aspect-[4/3] w-full" />
-          <Skeleton className="mt-4 h-4 w-24" />
+        <div key={index} className="rounded-lg border bg-card p-3 shadow-sm">
+          <Skeleton className="aspect-[4/3] w-full rounded-md" />
+          <div className="mt-4 flex items-center justify-between gap-3">
+            <Skeleton className="h-4 w-24" />
+            <Skeleton className="h-4 w-14" />
+          </div>
           <Skeleton className="mt-3 h-5 w-full" />
           <Skeleton className="mt-2 h-4 w-2/3" />
-          <Skeleton className="mt-5 h-10 w-full" />
+          <Skeleton className="mt-5 h-10 w-full rounded-md" />
         </div>
       ))}
     </div>
-  );
-}
-
-function FragmentWithAd({
-  index,
-  insertionIndex,
-  product,
-  adSlot,
-}: {
-  index: number;
-  insertionIndex: number;
-  product: ReactNode;
-  adSlot?: ReactNode;
-}) {
-  if (!adSlot || index !== insertionIndex) {
-    return product;
-  }
-
-  return (
-    <Fragment>
-      {adSlot}
-      {product}
-    </Fragment>
   );
 }

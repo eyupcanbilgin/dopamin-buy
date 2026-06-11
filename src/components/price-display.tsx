@@ -17,7 +17,7 @@ export function PriceDisplay({
   className,
 }: PriceDisplayProps) {
   return (
-    <div className={cn("space-y-0.5", className)}>
+    <div className={cn("space-y-1", className)}>
       <p
         className={cn(
           "font-bold tracking-normal text-navy",
@@ -29,8 +29,9 @@ export function PriceDisplay({
         {formatCurrency(price)}
       </p>
       {compareAtPrice ? (
-        <p className="text-xs text-muted-foreground line-through">
-          {formatCurrency(compareAtPrice)}
+        <p className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+          <span className="line-through">{formatCurrency(compareAtPrice)}</span>
+          <span>Sanal sepet tutarı</span>
         </p>
       ) : (
         <p className="text-xs text-muted-foreground">{label}</p>

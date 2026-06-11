@@ -77,12 +77,12 @@ export default function DeliverySimulationPage() {
       <CheckoutStepShell
         step="delivery"
         title="Teslimat Simülasyonu"
-        description="Şehir, ilçe ve adres tipi seç. Açık adres istemiyoruz; Dopamin güvenli, kurgu bir teslimat adresi üretir."
+        description="Şehir, ilçe ve adres tipi seç. Açık adres istemiyoruz; Doply güvenli, kurgu bir teslimat adresi üretir."
         subtotal={subtotal}
         itemCount={itemCount}
         backHref="/checkout"
       >
-        <section className="premium-card p-5">
+        <section className="premium-card p-5 sm:p-6">
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="grid gap-2">
               <Label htmlFor="city">Şehir</Label>
@@ -141,7 +141,7 @@ export default function DeliverySimulationPage() {
             </RadioGroup>
           </div>
 
-          <div className="mt-6 rounded-lg border border-primary/20 bg-primary/5 p-4">
+          <div className="mt-6 rounded-lg border border-primary/20 bg-[linear-gradient(180deg,hsl(var(--primary)/0.08),hsl(var(--card)))] p-4 shadow-sm">
             <p className="flex items-center gap-2 text-sm font-semibold text-navy">
               <MapPin className="h-4 w-4 text-primary" aria-hidden="true" />
               Oluşturulan güvenli kurgu adres

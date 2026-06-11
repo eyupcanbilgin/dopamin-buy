@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, MessageSquareText, ShieldCheck, Star, Store, TrendingUp, Truck } from "lucide-react";
 
-import { DopaminScoreBadge } from "@/components/badges";
+import { DoplyScoreBadge } from "@/components/badges";
 import { PriceDisplay } from "@/components/price-display";
 import { ProductDetailActions } from "@/components/product/product-detail-actions";
 import { ProductGallery } from "@/components/product/product-gallery";
@@ -38,15 +38,15 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
   const product = await getCatalogProductBySlug(slug);
   const title = product ? `${product.name} sanal ürün simülasyonu` : "Sanal ürün simülasyonu";
   const description = product
-    ? `${product.shortDescription} Dopamin'de gerçek ödeme, stok vaadi veya teslimat olmadan simüle edilir.`
-    : "Dopamin ürün sayfaları gerçek satın alma oluşturmayan simülasyon deneyimleridir.";
+    ? `${product.shortDescription} Doply'de gerçek ödeme, stok vaadi veya teslimat olmadan simüle edilir.`
+    : "Doply ürün sayfaları gerçek satın alma oluşturmayan simülasyon deneyimleridir.";
 
   return buildMetadata({
     title,
     description,
     path: `/urun/${slug}`,
     image: product?.image,
-    imageAlt: product ? `${product.name} sanal ürün görseli` : "Dopamin sanal ürün görseli",
+    imageAlt: product ? `${product.name} sanal ürün görseli` : "Doply sanal ürün görseli",
     keywords: product ? [product.name, "sanal ürün", "gerçek ödeme yok"] : [],
     noIndex: !product,
   });
@@ -70,7 +70,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
       <JsonLd
         data={[
           buildBreadcrumbJsonLd([
-            { name: "Dopamin", path: "/" },
+            { name: "Doply", path: "/" },
             { name: "Sanal Mağaza", path: "/shop" },
             {
               name: category?.name ?? "Kategori",
@@ -101,14 +101,14 @@ export default async function ProductPage({ params }: ProductPageProps) {
           </div>
           <h1 className="mt-5 text-3xl font-bold leading-tight tracking-normal">{product.name}</h1>
           <div className="mt-3 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-            <DopaminScoreBadge score={product.dopaminScore ?? product.rating} />
+            <DoplyScoreBadge score={product.dopaminScore ?? product.rating} />
             <span className="inline-flex items-center gap-1 font-medium">
               <Star className="h-4 w-4 fill-dopamine text-dopamine" aria-hidden="true" />
               {product.rating.toFixed(1)} / 5
             </span>
             <span>{product.reviewCount.toLocaleString("tr-TR")} değerlendirme</span>
           </div>
-          <div className="mt-5 rounded-lg border bg-background p-5">
+          <div className="mt-5 rounded-lg border border-primary/14 bg-card p-5 shadow-card">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
               <PriceDisplay
                 price={product.price}
@@ -122,13 +122,13 @@ export default async function ProductPage({ params }: ProductPageProps) {
               ) : null}
             </div>
             <p className="mt-3 text-xs leading-5 text-muted-foreground">
-              Sepet finalinde Dopamin indirimi toplamı dengeler.
+              Sepet finalinde Doply indirimi toplamı dengeler.
             </p>
           </div>
           <p className="mt-5 leading-7 text-muted-foreground">{product.description}</p>
           <div className="mt-5 grid gap-3 text-sm sm:grid-cols-2">
             {product.merchantName ? (
-              <Card>
+              <Card className="shadow-card">
                 <CardHeader className="p-4 pb-2">
                   <CardTitle className="flex items-center gap-2 text-sm">
                     <Store className="h-4 w-4 text-primary" aria-hidden="true" />
@@ -144,7 +144,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
               </Card>
             ) : null}
             {product.simulatedDeliveryEstimate ? (
-              <Card>
+              <Card className="shadow-card">
                 <CardHeader className="p-4 pb-2">
                   <CardTitle className="flex items-center gap-2 text-sm">
                     <Truck className="h-4 w-4 text-primary" aria-hidden="true" />
@@ -160,7 +160,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
               </Card>
             ) : null}
             {product.popularityScore ? (
-              <p className="flex items-center gap-2 rounded-lg border bg-background p-4 text-muted-foreground">
+              <p className="flex items-center gap-2 rounded-lg border bg-background p-4 text-muted-foreground shadow-sm">
                 <TrendingUp className="h-4 w-4 text-primary" aria-hidden="true" />
                 <span>
                   <span className="font-semibold text-navy">Popülerlik:</span>{" "}
@@ -169,7 +169,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
               </p>
             ) : null}
             {product.stockFeelingLabel ? (
-              <p className="flex items-center gap-2 rounded-lg border bg-background p-4 text-muted-foreground">
+              <p className="flex items-center gap-2 rounded-lg border bg-background p-4 text-muted-foreground shadow-sm">
                 <ShieldCheck className="h-4 w-4 text-primary" aria-hidden="true" />
                 <span>
                   <span className="font-semibold text-navy">Stok tonu:</span>{" "}
@@ -181,7 +181,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
           <Separator className="my-6" />
           <ProductDetailActions product={product} />
           <Separator className="my-6" />
-          <div className="rounded-lg bg-secondary/55 p-4">
+          <div className="rounded-lg border border-dopamine/30 bg-dopamine/12 p-4">
             <h2 className="flex items-center gap-2 text-sm font-semibold">
               <MessageSquareText className="h-4 w-4 text-primary" aria-hidden="true" />
               Kısa düşünme notu

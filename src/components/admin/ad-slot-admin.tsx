@@ -70,7 +70,7 @@ export function AdSlotAdmin() {
 
   const authHeaders = useMemo(
     () => ({
-      "x-dopamin-admin-key": adminKey,
+      "x-doply-admin-key": adminKey,
     }),
     [adminKey],
   );
@@ -193,7 +193,7 @@ export function AdSlotAdmin() {
             type="password"
             value={adminKey}
             onChange={(event) => setAdminKey(event.target.value)}
-            placeholder="DOPAMIN_ADMIN_KEY"
+            placeholder="DOPLY_ADMIN_KEY"
           />
         </div>
         <Button type="button" className="mt-4 w-full" onClick={fetchSlots} disabled={loading}>

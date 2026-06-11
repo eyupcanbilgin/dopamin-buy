@@ -93,8 +93,8 @@ export default function ShippingSimulationPage() {
         itemCount={itemCount}
         backHref="/checkout/teslimat"
       >
-        <section className="premium-card p-5">
-          <div className="rounded-lg border bg-background p-4">
+        <section className="premium-card p-5 sm:p-6">
+          <div className="rounded-lg border bg-background p-4 shadow-sm">
             <p className="text-sm font-semibold text-navy">Kurgu teslimat noktası</p>
             <p className="mt-1 text-sm leading-6 text-muted-foreground">
               {delivery.fictionalAddress}
@@ -110,7 +110,7 @@ export default function ShippingSimulationPage() {
               <Label
                 key={option.id}
                 htmlFor={option.id}
-                className="flex cursor-pointer gap-3 rounded-lg border bg-background p-4 transition hover:border-primary/50"
+                className="flex cursor-pointer gap-3 rounded-lg border bg-background p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-lift"
               >
                 <RadioGroupItem id={option.id} value={option.id} className="mt-1" />
                 <span>

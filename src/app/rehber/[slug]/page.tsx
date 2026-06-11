@@ -35,7 +35,7 @@ export async function generateMetadata({ params }: GuidePageProps): Promise<Meta
     return buildMetadata({
       title: "Rehber yazısı",
       description:
-        "Dopamin alışveriş simülasyonu ve Sanal Sipariş hakkında dürüst rehber içerikleri.",
+        "Doply alışveriş simülasyonu ve Sanal Sipariş hakkında dürüst rehber içerikleri.",
       path: `/rehber/${slug}`,
       noIndex: true,
     });
@@ -65,7 +65,7 @@ export default async function GuideDetailPage({ params }: GuidePageProps) {
       <JsonLd
         data={[
           buildBreadcrumbJsonLd([
-            { name: "Dopamin", path: "/" },
+            { name: "Doply", path: "/" },
             { name: "Rehber", path: "/rehber" },
             { name: guide.title, path: `/rehber/${guide.slug}` },
           ]),
@@ -88,7 +88,7 @@ export default async function GuideDetailPage({ params }: GuidePageProps) {
 
       <article className="mx-auto max-w-3xl">
         <header className="rounded-lg border bg-card p-6 shadow-sm">
-          <Badge variant="simulation">Dopamin rehber</Badge>
+          <Badge variant="simulation">Doply rehber</Badge>
           <h1 className="mt-4 text-3xl font-bold leading-tight tracking-normal text-navy sm:text-4xl">
             {guide.title}
           </h1>
@@ -123,7 +123,7 @@ export default async function GuideDetailPage({ params }: GuidePageProps) {
         <section className="mt-10 rounded-lg border border-dopamine/35 bg-dopamine/10 p-5">
           <h2 className="font-semibold text-navy">Kısa not</h2>
           <p className="mt-2 text-sm leading-6 text-muted-foreground">
-            Dopamin gerçek ödeme almaz, gerçek teslimat yapmaz ve tıbbi tedavi iddiasında
+            Doply gerçek ödeme almaz, gerçek teslimat yapmaz ve tıbbi tedavi iddiasında
             bulunmaz. Deneyim, alışveriş hissini daha güvenli bir simülasyon alanında tamamlamaya
             odaklanır.
           </p>

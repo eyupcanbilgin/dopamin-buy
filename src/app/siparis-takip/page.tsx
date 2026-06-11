@@ -52,18 +52,27 @@ export default function SimulatedOrderTrackingPage() {
   const hasHydrated = useCartStore((state) => state.hasHydrated);
   const resetSession = useCartStore((state) => state.resetSession);
   const [activeStep, setActiveStep] = useState(0);
+  const latestOrderId = latestOrder?.id;
 
   useEffect(() => {
-    if (!latestOrder) {
+    if (!latestOrderId) {
       return;
     }
 
+    const startedAt = Date.now();
+    const stepDurationMs = 1600;
+    const updateProgress = () => {
+      const elapsedSteps = Math.floor((Date.now() - startedAt) / stepDurationMs);
+      setActiveStep(Math.min(elapsedSteps, statuses.length - 1));
+    };
+
+    updateProgress();
     const interval = window.setInterval(() => {
-      setActiveStep((current) => Math.min(current + 1, statuses.length - 1));
-    }, 1600);
+      updateProgress();
+    }, 250);
 
     return () => window.clearInterval(interval);
-  }, [latestOrder]);
+  }, [latestOrderId]);
 
   const estimatedArrival = useMemo(() => {
     if (!latestOrder) {
@@ -119,31 +128,31 @@ export default function SimulatedOrderTrackingPage() {
 
   return (
     <main className="container py-8">
-      <section className="mb-6 rounded-lg border bg-card p-5 shadow-sm">
+      <section className="mb-6 overflow-hidden rounded-lg border bg-surface-strong p-5 text-white shadow-soft">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <div className="flex flex-wrap items-center gap-2">
-              <Badge variant="simulation">Simülasyon Modu</Badge>
-              <Badge variant="outline">Dopamin Rota</Badge>
+              <Badge className="border-white/20 bg-white/14 text-white">Simülasyon Modu</Badge>
+              <Badge className="border-white/20 bg-white/14 text-white">Doply Rota</Badge>
             </div>
-            <h1 className="mt-4 text-3xl font-bold tracking-normal text-navy">
+            <h1 className="mt-4 text-3xl font-bold tracking-normal">
               Sanal Sipariş takibi
             </h1>
-            <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-white/72">
               Soyut rota kartı gerçek konum, gerçek kurye veya gerçek taşıyıcı bilgisi içermez.
               Amaç sipariş hissini güvenli ve tamamlanmış şekilde kapatmaktır.
             </p>
           </div>
-          <div className="rounded-lg bg-secondary/55 p-4 text-sm">
-            <p className="text-muted-foreground">Sanal Sipariş no</p>
-            <p className="mt-1 font-bold text-navy">{latestOrder.id}</p>
+          <div className="rounded-lg border border-white/14 bg-white/10 p-4 text-sm backdrop-blur">
+            <p className="text-white/68">Sanal Sipariş no</p>
+            <p className="mt-1 font-bold">{latestOrder.id}</p>
           </div>
         </div>
       </section>
 
       <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
         <section className="space-y-6">
-          <Card className="overflow-hidden">
+          <Card className="overflow-hidden shadow-card">
             <CardHeader className="border-b bg-surface-subtle">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
@@ -165,7 +174,7 @@ export default function SimulatedOrderTrackingPage() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="shadow-card">
             <CardHeader>
               <CardTitle>Sipariş durumları</CardTitle>
             </CardHeader>
@@ -179,7 +188,7 @@ export default function SimulatedOrderTrackingPage() {
                     <li key={status} className="grid grid-cols-[32px_1fr] gap-3">
                       <span
                         className={cn(
-                          "mt-0.5 flex h-8 w-8 items-center justify-center rounded-full border",
+                          "mt-0.5 flex h-8 w-8 items-center justify-center rounded-full border transition",
                           isDone
                             ? "border-primary bg-primary text-primary-foreground"
                             : "border-border bg-background text-muted-foreground",
@@ -204,7 +213,7 @@ export default function SimulatedOrderTrackingPage() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="shadow-card">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Bell className="h-5 w-5 text-primary" aria-hidden="true" />
@@ -229,7 +238,7 @@ export default function SimulatedOrderTrackingPage() {
           </Card>
 
           {completed ? (
-            <Card className="border-saved/20 bg-saved/5">
+            <Card className="border-saved/20 bg-[linear-gradient(135deg,hsl(var(--saved)/0.10),hsl(var(--card)))] shadow-soft">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <ShieldCheck className="h-5 w-5 text-saved" aria-hidden="true" />
@@ -279,7 +288,7 @@ export default function SimulatedOrderTrackingPage() {
             label="Bu takip akışında korunan sepet değeri"
           />
 
-          <Card>
+          <Card className="shadow-card">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <WalletCards className="h-5 w-5 text-primary" aria-hidden="true" />
@@ -294,7 +303,7 @@ export default function SimulatedOrderTrackingPage() {
                 </div>
                 <div className="flex justify-between gap-3">
                   <span className="text-muted-foreground">Kurgusal taşıyıcı</span>
-                  <span className="font-medium">Dopamin Rota</span>
+                  <span className="font-medium">Doply Rota</span>
                 </div>
                 <div className="flex justify-between gap-3">
                   <span className="text-muted-foreground">Toplam sepet hissi</span>
@@ -320,7 +329,7 @@ export default function SimulatedOrderTrackingPage() {
             </CardContent>
           </Card>
 
-          <Card className="border-primary/20 bg-primary/5">
+          <Card className="border-primary/20 bg-primary/5 shadow-card">
             <CardContent className="pt-5">
               <p className="flex items-center gap-2 text-sm font-semibold text-navy">
                 <Sparkles className="h-4 w-4 text-primary" aria-hidden="true" />
@@ -330,7 +339,7 @@ export default function SimulatedOrderTrackingPage() {
                 Şu anda {communityMetric} kişi harcamadan sepet tamamlıyor.
               </p>
               <p className="mt-2 text-xs leading-5 text-muted-foreground">
-                Bu gösterge Dopamin içi topluluk aktivitesi olarak etiketlenir; acele ettirme amacı
+                Bu gösterge Doply içi topluluk aktivitesi olarak etiketlenir; acele ettirme amacı
                 taşımaz.
               </p>
             </CardContent>
@@ -348,10 +357,10 @@ function AbstractMap({ progress }: { progress: number }) {
   return (
     <div className="relative h-[320px] overflow-hidden bg-[linear-gradient(135deg,hsl(var(--warm)),hsl(var(--surface-subtle)))]">
       <div className="absolute inset-0 opacity-70">
-        <div className="absolute left-[8%] top-[18%] h-24 w-36 rounded-lg border bg-white/42" />
-        <div className="absolute right-[10%] top-[16%] h-28 w-44 rounded-lg border bg-white/38" />
-        <div className="absolute bottom-[14%] left-[18%] h-24 w-48 rounded-lg border bg-white/38" />
-        <div className="absolute bottom-[20%] right-[18%] h-20 w-32 rounded-lg border bg-white/42" />
+        <div className="absolute left-[8%] top-[18%] h-24 w-36 rounded-lg border bg-white/52 shadow-sm" />
+        <div className="absolute right-[10%] top-[16%] h-28 w-44 rounded-lg border bg-white/44 shadow-sm" />
+        <div className="absolute bottom-[14%] left-[18%] h-24 w-48 rounded-lg border bg-white/44 shadow-sm" />
+        <div className="absolute bottom-[20%] right-[18%] h-20 w-32 rounded-lg border bg-white/52 shadow-sm" />
       </div>
 
       <svg className="absolute inset-0 h-full w-full" viewBox="0 0 100 100" aria-hidden="true">
@@ -400,7 +409,7 @@ function getStatusDescription(index: number) {
     "Sipariş numarası oluşturuldu ve sepet akışı kayıt altına alındı.",
     "Ürün seçme ve sepete ekleme döngüsü tamamlandı.",
     "Başlangıç ve kapanış dürtü puanları için nazik takip sürüyor.",
-    "Sepet tutarı Dopamin indirimiyle dengelendi.",
+    "Sepet tutarı Doply indirimiyle dengelendi.",
     "Takip akışı kapanışa ulaştı; artık devam etmek zorunda değilsin.",
   ];
 

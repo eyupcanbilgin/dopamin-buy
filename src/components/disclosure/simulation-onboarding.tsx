@@ -13,7 +13,7 @@ import {
 
 import { Button } from "@/components/ui/button";
 
-const DISCLOSURE_STORAGE_KEY = "dopamin-simulation-disclosure-accepted-v1";
+const DISCLOSURE_STORAGE_KEY = "doply-simulation-disclosure-accepted-v1";
 
 const disclosureItems = [
   {
@@ -45,12 +45,14 @@ const disclosureItems = [
 
 export function SimulationOnboarding() {
   const pathname = usePathname();
-  const [isVisible, setIsVisible] = useState(false);
+  const isAdminPath = pathname.startsWith("/admin");
+  const [isVisible, setIsVisible] = useState(true);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const dialogRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
-    if (pathname.startsWith("/admin")) {
+    if (isAdminPath) {
+      setIsVisible(false);
       return;
     }
 
@@ -60,7 +62,7 @@ export function SimulationOnboarding() {
     } catch {
       setIsVisible(true);
     }
-  }, [pathname]);
+  }, [isAdminPath]);
 
   useEffect(() => {
     if (!isVisible) {
@@ -114,7 +116,7 @@ export function SimulationOnboarding() {
     }
   }
 
-  if (!isVisible) {
+  if (isAdminPath || !isVisible) {
     return null;
   }
 
@@ -142,7 +144,7 @@ export function SimulationOnboarding() {
               id="simulation-onboarding-title"
               className="mt-2 text-2xl font-bold leading-tight tracking-normal text-navy sm:text-3xl"
             >
-              Dopamin bir alışveriş simülasyonudur.
+              Doply bir alışveriş simülasyonudur.
             </h2>
           </div>
         </div>
@@ -151,7 +153,7 @@ export function SimulationOnboarding() {
           id="simulation-onboarding-description"
           className="mt-5 text-base leading-7 text-muted-foreground"
         >
-          Dopamin, alışveriş hissini gerçek para harcamadan yaşatan bir simülasyon platformudur.
+          Doply, alışveriş hissini gerçek para harcamadan yaşatan bir simülasyon platformudur.
           Ürünlere bakabilir, sepete ekleyebilir ve Sanal Sipariş akışını tamamlayabilirsin;
           gerçek ödeme, teslimat veya sipariş oluşmaz.
         </p>

@@ -21,12 +21,12 @@ export function EmptyState({
   className,
 }: EmptyStateProps) {
   return (
-    <section className={cn("mx-auto max-w-2xl premium-card p-8 text-center", className)}>
-      <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-md bg-primary/10 text-primary">
+    <section className={cn("mx-auto max-w-2xl premium-card p-8 text-center sm:p-10", className)}>
+      <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-md bg-primary/10 text-primary shadow-sm">
         {icon ?? <ShoppingBag className="h-7 w-7" aria-hidden="true" />}
       </span>
       <h1 className="mt-5 text-3xl font-bold tracking-normal text-navy">{title}</h1>
-      <p className="mt-3 text-sm leading-6 text-muted-foreground">{description}</p>
+      <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-muted-foreground">{description}</p>
       {action ? <div className="mt-6">{action}</div> : null}
     </section>
   );
