@@ -88,26 +88,67 @@ http://localhost:3000
 
 ## Veritabanı
 
-Doply staging akışı PostgreSQL üzerinde migration + seed + doğrulama adımlarını birlikte çalıştırır. Lokal fallback katalog yalnızca geliştirme ve hata toleransı içindir; staging için `npm run db:verify` başarılı olmalıdır.
+Doply staging ve production akışı PostgreSQL üzerinde migration + doğrulama adımlarını açık şekilde çalıştırır. Seed/reset komutları build veya deploy sırasında otomatik çalışmaz; sadece doğru veritabanını hedeflediğinden emin olduktan sonra manuel çalıştırılır. Lokal fallback katalog yalnızca geliştirme ve hata toleransı içindir; staging için `npm run db:verify` başarılı olmalıdır.
 
-Gerekli ortam değişkenleri:
+### Ortam modeli
 
-```bash
-DATABASE_URL="postgresql://USER:PASSWORD@HOST:PORT/DATABASE?schema=public"
-DOPLY_ADMIN_KEY="uzun-rastgele-staging-admin-anahtari"
-NEXT_PUBLIC_SITE_URL="https://doply.app"
-NEXT_PUBLIC_DOPLY_PREMIUM_NO_ADS="false"
+| Ortam | Git branch | Vercel ortamı | Domain | Veritabanı |
+| --- | --- | --- | --- | --- |
+| local | feature branch veya local worktree | yok | `http://localhost:3000` | lokal PostgreSQL veya Neon dev/staging branch |
+| staging | `staging` | Preview | `https://staging.doply.app` veya Vercel preview URL | Neon staging branch/database |
+| production | `main` | Production | `https://doply.app` | Neon production branch/database |
+
+Önerilen akış:
+
+```text
+feature branch -> pull request -> staging branch -> Vercel Preview -> main -> Vercel Production
 ```
 
-Opsiyonel seed ve doğrulama değişkenleri:
+`staging` branch'i beta ve veri doğrulama alanıdır. `main` yalnızca staging doğrulaması tamamlandıktan sonra production'a promote edilir.
+
+### Vercel ortam değişkenleri
+
+Vercel panelinde value alanına tırnak koyma. Örneğin `NEXT_PUBLIC_SITE_URL=https://doply.app` yaz; `"https://doply.app"` yazma.
+
+Local `.env` örneği:
 
 ```bash
-DOPLY_SEED_PRODUCT_COUNT="10000"
-DOPLY_SEED_VALUE="doply-staging-2026"
-DOPLY_VERIFY_MIN_PRODUCTS="10000"
-DOPLY_VERIFY_MIN_CATEGORIES="12"
-DOPLY_VERIFY_MIN_BRANDS="1000"
-DOPLY_VERIFY_MIN_IMAGES="10000"
+DOPLY_DEPLOY_ENV=local
+DATABASE_URL=postgresql://USER:PASSWORD@HOST:5432/DATABASE?sslmode=require
+DOPLY_ADMIN_KEY=uzun-rastgele-local-admin-anahtari
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
+NEXT_PUBLIC_DOPLY_PREMIUM_NO_ADS=false
+```
+
+Vercel Preview / staging:
+
+```bash
+DOPLY_DEPLOY_ENV=staging
+DATABASE_URL=<Neon staging database URL>
+DOPLY_ADMIN_KEY=<staging-only strong key, 16+ chars>
+NEXT_PUBLIC_SITE_URL=https://staging.doply.app
+NEXT_PUBLIC_DOPLY_PREMIUM_NO_ADS=false
+```
+
+Vercel Production:
+
+```bash
+DOPLY_DEPLOY_ENV=production
+DATABASE_URL=<Neon production database URL>
+DOPLY_ADMIN_KEY=<production-only strong key, 16+ chars>
+NEXT_PUBLIC_SITE_URL=https://doply.app
+NEXT_PUBLIC_DOPLY_PREMIUM_NO_ADS=false
+```
+
+Opsiyonel seed ve doğrulama değişkenleri local/staging için kullanılabilir:
+
+```bash
+DOPLY_SEED_PRODUCT_COUNT=10000
+DOPLY_SEED_VALUE=doply-staging-2026
+DOPLY_VERIFY_MIN_PRODUCTS=10000
+DOPLY_VERIFY_MIN_CATEGORIES=12
+DOPLY_VERIFY_MIN_BRANDS=1000
+DOPLY_VERIFY_MIN_IMAGES=10000
 ```
 
 Şema doğrulama:
@@ -116,7 +157,7 @@ DOPLY_VERIFY_MIN_IMAGES="10000"
 npm run prisma:validate
 ```
 
-Migration deploy:
+Migration deploy. Bu komut production'da da güvenlidir; yalnızca migration uygular:
 
 ```bash
 npm run db:migrate
@@ -128,7 +169,7 @@ Prisma migration scripti ayni isi yapar ve staging dogrulamasinda da calismasi b
 npm run prisma:migrate:deploy
 ```
 
-10.000 urunluk sentetik demo katalog seed'i:
+10.000 ürünlük sentetik demo katalog seed'i. Bu komutu normalde yalnızca local veya staging veritabanına karşı çalıştır:
 
 ```bash
 npm run db:seed
@@ -140,24 +181,30 @@ Alternatif Prisma seed scripti:
 npm run prisma:db:seed
 ```
 
-Katalog ve veritabani sagligi dogrulama:
+Katalog ve veritabanı sağlığı doğrulama:
 
 ```bash
 npm run db:verify
 ```
 
-Beklenen minimum sonuclar:
+Aktif ürünlerde eksik görsel çıkarsa güvenli placeholder görsel onarımı:
 
-- aktif urun: en az 10.000
+```bash
+npm run db:repair-images
+```
+
+Beklenen minimum sonuçlar:
+
+- aktif ürün: en az 10.000
 - aktif kategori: en az 12
 - marka: en az 1.000
-- urun gorseli: en az 10.000
+- ürün görseli: en az 10.000
 - tekrar eden slug: 0
-- eksik/gecersiz fiyat: 0
-- kategori iliskisi eksik urun: 0
-- gorselsiz aktif urun: 0
+- eksik/geçersiz fiyat: 0
+- kategori ilişkisi eksik ürün: 0
+- görselsiz aktif ürün: 0
 
-Staging kurulum sirasi:
+Staging veritabanı kurulum sırası:
 
 ```bash
 npm install
@@ -169,7 +216,36 @@ npm run db:verify
 npm run build
 ```
 
-Seed 12 kategorilik Doply taksonomisini, binlerce kurgusal markayi, varsayilan olarak 10.000 Turkce sentetik urunu, guvenli placeholder urun gorsellerini, etik ad slotlarini ve temel icerik sayfalarini olusturur. Seed deterministiktir; ayni `DOPLY_SEED_VALUE` ile ayni katalog yeniden uretilebilir.
+Seed 12 kategorilik Doply taksonomisini, binlerce kurgusal markayı, varsayılan olarak 10.000 Türkçe sentetik ürünü, güvenli placeholder ürün görsellerini, etik ad slotlarını ve temel içerik sayfalarını oluşturur. Seed deterministiktir; aynı `DOPLY_SEED_VALUE` ile aynı katalog yeniden üretilebilir.
+
+Production seed güvenliği:
+
+- `npm run build` seed veya reset çalıştırmaz.
+- `npm run db:migrate` seed veya reset çalıştırmaz.
+- `npm run db:seed` production-benzeri hedeflerde varsayılan olarak bloklanır.
+- Production-benzeri hedef: `DOPLY_DEPLOY_ENV=production`, `VERCEL_ENV=production` veya `NEXT_PUBLIC_SITE_URL=https://doply.app`.
+- Production recovery için seed gerçekten gerekiyorsa iki değişken birlikte verilmelidir: `DOPLY_ALLOW_PRODUCTION_SEED=true` ve `DOPLY_SEED_CONFIRM=production-reset`.
+
+### Release kontrolü
+
+Kod release öncesi:
+
+```bash
+npm run release:check
+```
+
+Bu komut sırasıyla `lint`, `typecheck`, `test`, `build` çalıştırır. İçinde bulunduğun shell'de `DATABASE_URL` varsa ayrıca `db:verify` çalıştırır; yoksa DB doğrulamasını atlar. `npm run deploy:check` aynı komutun alias'ıdır.
+
+### Staging'den production'a promote
+
+1. Feature branch'i PR ile `staging` branch'ine al.
+2. Vercel Preview deployment'ının geçtiğini doğrula.
+3. Staging Neon DB için `npm run db:migrate`, gerekiyorsa `npm run db:seed`, ardından `npm run db:verify` çalıştır.
+4. `npm run release:check` çalıştır.
+5. Staging UI'da Sanal Sipariş, ödeme simülasyonu ve admin katalog kontrollerini smoke test et.
+6. `staging` branch'ini `main` branch'ine merge et.
+7. Production Vercel deployment sonrası production Neon DB için `npm run db:migrate` ve `npm run db:verify` çalıştır.
+8. Production'da gerçek ödeme, gerçek kart alanı, açık adres veya gerçek teslimat akışı olmadığını kontrol et.
 
 ## Ürün importu
 

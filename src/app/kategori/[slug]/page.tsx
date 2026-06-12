@@ -13,7 +13,7 @@ import { getPublicAdSlot } from "@/lib/ad-server";
 import {
   getCatalogCategories,
   getCatalogCategoryBySlug,
-  getCatalogProductsByCategory,
+  getCatalogProductPage,
 } from "@/lib/catalog-db";
 import {
   buildBreadcrumbJsonLd,
@@ -25,7 +25,10 @@ type CategoryPageProps = {
   params: Promise<{
     slug: string;
   }>;
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
 };
+
+const PUBLIC_PRODUCT_PAGE_SIZE = 48;
 
 export const dynamic = "force-dynamic";
 
@@ -55,20 +58,24 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
   });
 }
 
-export default async function CategoryPage({ params }: CategoryPageProps) {
+export default async function CategoryPage({ params, searchParams }: CategoryPageProps) {
   const { slug } = await params;
+  const resolvedSearchParams = await searchParams;
+  const page = readSearchNumber(resolvedSearchParams?.page, 1);
+  const pageSize = readSearchNumber(resolvedSearchParams?.pageSize, PUBLIC_PRODUCT_PAGE_SIZE);
   const category = await getCatalogCategoryBySlug(slug);
 
   if (!category) {
     notFound();
   }
 
-  const [categoryProducts, categories, midFeedAdSlot, sidebarAdSlot] = await Promise.all([
-    getCatalogProductsByCategory(slug, 240),
+  const [categoryProductPage, categories, midFeedAdSlot, sidebarAdSlot] = await Promise.all([
+    getCatalogProductPage({ categorySlug: slug, page, pageSize }),
     getCatalogCategories(),
     getPublicAdSlot("category-mid-feed"),
     getPublicAdSlot("sidebar-desktop"),
   ]);
+  const categoryProducts = categoryProductPage.products;
 
   return (
     <main className="container py-8">
@@ -116,8 +123,8 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
           </div>
           <div className="grid grid-cols-2 gap-3 text-sm sm:min-w-72">
             <div className="rounded-lg border border-white/14 bg-white/10 p-4 backdrop-blur">
-              <p className="text-2xl font-bold">{categoryProducts.length.toLocaleString("tr-TR")}</p>
-              <p className="mt-1 text-white/68">ürün gösteriliyor</p>
+              <p className="text-2xl font-bold">{categoryProductPage.totalCount.toLocaleString("tr-TR")}</p>
+              <p className="mt-1 text-white/68">ürünlük kategori</p>
             </div>
             <div className="rounded-lg border border-white/14 bg-white/10 p-4 backdrop-blur">
               <p className="text-2xl font-bold">0 TL</p>
@@ -132,6 +139,11 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
         categories={categories}
         initialCategory={slug}
         showCategoryFilter={false}
+        totalCount={categoryProductPage.totalCount}
+        currentPage={categoryProductPage.page}
+        pageSize={categoryProductPage.pageSize}
+        totalPages={categoryProductPage.totalPages}
+        basePath={`/kategori/${category.slug}`}
         midFeedAdSlot={
           <AdSlot
             placement="category-mid-feed"
@@ -153,4 +165,10 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
       />
     </main>
   );
+}
+
+function readSearchNumber(value: string | string[] | undefined, fallback: number) {
+  const raw = Array.isArray(value) ? value[0] : value;
+  const parsed = Number(raw);
+  return Number.isFinite(parsed) && parsed > 0 ? Math.floor(parsed) : fallback;
 }

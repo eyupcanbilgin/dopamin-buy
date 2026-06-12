@@ -1,7 +1,16 @@
 import { Prisma, PrismaClient } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 
-import { resetSyntheticDemoCatalog } from "../src/lib/ingestion/catalog-admin-actions";
+import { normalizeImportRow, type ProductImportDTO } from "../src/lib/ingestion/dto";
+import {
+  DEFAULT_BRAND_NAME,
+  cleanText,
+  createDeduplicationKey,
+  createProductSlug,
+} from "../src/lib/ingestion/normalization";
+import { createImportImages } from "../src/lib/ingestion/repository";
+import { slugifyTurkish } from "../src/lib/slug";
+import { generateSyntheticCatalog, SYNTHETIC_CATEGORY_TAXONOMY } from "../src/lib/synthetic-catalog";
 
 const databaseUrl = process.env.DATABASE_URL;
 
@@ -12,6 +21,7 @@ if (!databaseUrl) {
 const DEFAULT_PRODUCT_COUNT = 10_000;
 const DEFAULT_SEED_VALUE = "doply-staging-2026";
 const MAX_SEED_PRODUCT_COUNT = 50_000;
+const PRODUCTION_SITE_URLS = new Set(["https://doply.app", "https://www.doply.app"]);
 
 const adapter = new PrismaPg(databaseUrl);
 const prisma = new PrismaClient({ adapter });
@@ -30,6 +40,309 @@ function readPositiveInteger(value: string | undefined, fallback: number, variab
   }
 
   return parsed;
+}
+
+function normalize(value: string | undefined) {
+  return value?.trim().toLowerCase() ?? "";
+}
+
+function assertSafeSeedTarget() {
+  const deployEnv = normalize(process.env.DOPLY_DEPLOY_ENV);
+  const vercelEnv = normalize(process.env.VERCEL_ENV);
+  const siteUrl = normalize(process.env.NEXT_PUBLIC_SITE_URL).replace(/\/+$/, "");
+  const productionLikeTarget =
+    deployEnv === "production" ||
+    vercelEnv === "production" ||
+    PRODUCTION_SITE_URLS.has(siteUrl);
+
+  if (!productionLikeTarget) {
+    return;
+  }
+
+  const explicitlyAllowed = process.env.DOPLY_ALLOW_PRODUCTION_SEED === "true";
+  const confirmation = process.env.DOPLY_SEED_CONFIRM === "production-reset";
+
+  if (explicitlyAllowed && confirmation) {
+    console.warn(
+      "Doply production seed override enabled. Continuing because DOPLY_ALLOW_PRODUCTION_SEED=true and DOPLY_SEED_CONFIRM=production-reset were both provided.",
+    );
+    return;
+  }
+
+  throw new Error(
+    [
+      "Refusing to run Doply seed against a production-like environment.",
+      "Seed resets the synthetic demo catalog and must stay manual and environment-specific.",
+      "Use a Neon staging branch/database for normal seed runs.",
+      "If this is an intentional production recovery, set both DOPLY_ALLOW_PRODUCTION_SEED=true and DOPLY_SEED_CONFIRM=production-reset.",
+    ].join(" "),
+  );
+}
+
+type PreparedSyntheticProduct = {
+  dto: ProductImportDTO;
+  slug: string;
+  categorySlug: string;
+  brandName: string;
+  brandSlug: string;
+};
+
+function chunk<T>(items: T[], size: number) {
+  const chunks: T[][] = [];
+
+  for (let index = 0; index < items.length; index += size) {
+    chunks.push(items.slice(index, index + size));
+  }
+
+  return chunks;
+}
+
+function prepareSyntheticProducts(productCount: number, seedValue: string) {
+  const rows = generateSyntheticCatalog({ count: productCount, seed: seedValue });
+  const seen = new Set<string>();
+  const prepared: PreparedSyntheticProduct[] = [];
+  const validationErrors: Array<{ row: number; field: string; message: string }> = [];
+  let duplicateCount = 0;
+
+  rows.forEach((row, index) => {
+    const parsed = normalizeImportRow(row);
+    const rowNumber = index + 1;
+
+    if (!parsed.success) {
+      validationErrors.push(
+        ...parsed.error.issues.map((issue) => ({
+          row: rowNumber,
+          field: issue.path.join(".") || "row",
+          message: issue.message,
+        })),
+      );
+      return;
+    }
+
+    const dto = parsed.data;
+    const dedupeKey = createDeduplicationKey(dto.title, dto.brand, dto.category);
+
+    if (seen.has(dedupeKey)) {
+      duplicateCount += 1;
+      return;
+    }
+
+    seen.add(dedupeKey);
+
+    const brandName = cleanText(dto.brand || DEFAULT_BRAND_NAME);
+    prepared.push({
+      dto,
+      slug: createProductSlug(dto.title, brandName, dto.category),
+      categorySlug: slugifyTurkish(dto.category),
+      brandName,
+      brandSlug: slugifyTurkish(brandName),
+    });
+  });
+
+  return {
+    totalRows: rows.length,
+    prepared,
+    duplicateCount,
+    validationErrors,
+  };
+}
+
+async function seedSyntheticCatalogFast(productCount: number, seedValue: string) {
+  const preparedResult = prepareSyntheticProducts(productCount, seedValue);
+  const { prepared, duplicateCount, validationErrors, totalRows } = preparedResult;
+
+  if (validationErrors.length > 0) {
+    return {
+      totalRows,
+      importedCount: 0,
+      skippedCount: totalRows,
+      duplicateCount,
+      validationErrors,
+    };
+  }
+
+  await Promise.all(
+    SYNTHETIC_CATEGORY_TAXONOMY.map((category) =>
+      prisma.category.upsert({
+        where: { slug: category.slug },
+        update: {
+          name: category.name,
+          description: category.description,
+          sortOrder: category.sortOrder,
+          isActive: true,
+        },
+        create: {
+          name: category.name,
+          slug: category.slug,
+          description: category.description,
+          sortOrder: category.sortOrder,
+          isActive: true,
+        },
+      }),
+    ),
+  );
+
+  const brandData = Array.from(
+    prepared
+      .reduce((map, product) => {
+        map.set(product.brandSlug, {
+          name: product.brandName,
+          slug: product.brandSlug,
+          description: `${product.brandName}, Doply katalog simülasyonu için yetkili veya sentetik kaynaklardan kullanılan marka adıdır.`,
+          isFictional: true,
+        });
+        return map;
+      }, new Map<string, Prisma.BrandCreateManyInput>())
+      .values(),
+  );
+
+  for (const brandChunk of chunk(brandData, 1_000)) {
+    await prisma.brand.createMany({
+      data: brandChunk,
+      skipDuplicates: true,
+    });
+  }
+
+  const [categories, brands] = await Promise.all([
+    prisma.category.findMany({
+      where: { slug: { in: Array.from(new Set(prepared.map((product) => product.categorySlug))) } },
+      select: { id: true, name: true, slug: true },
+    }),
+    prisma.brand.findMany({
+      where: { slug: { in: Array.from(new Set(prepared.map((product) => product.brandSlug))) } },
+      select: { id: true, name: true, slug: true },
+    }),
+  ]);
+
+  const categoryBySlug = new Map(categories.map((category) => [category.slug, category]));
+  const brandBySlug = new Map(brands.map((brand) => [brand.slug, brand]));
+  const productData: Prisma.ProductCreateManyInput[] = [];
+
+  for (const product of prepared) {
+    const category = categoryBySlug.get(product.categorySlug);
+    const brand = brandBySlug.get(product.brandSlug);
+
+    if (!category || !brand) {
+      validationErrors.push({
+        row: productData.length + 1,
+        field: "category/brand",
+        message: `${product.dto.title} için kategori veya marka bulunamadı.`,
+      });
+      continue;
+    }
+
+    const description =
+      product.dto.description ||
+      `${product.dto.title}, Doply Sanal Sipariş deneyiminde gerçek ödeme veya teslimat oluşturmadan incelenen simülasyon ürünüdür.`;
+    const shortDescription =
+      product.dto.shortDescription ||
+      `${category.name} kategorisinde güvenli sanal alışveriş hissi için katalog kaydı.`;
+    const searchKeywords = [
+      product.dto.title,
+      category.name,
+      brand.name,
+      product.dto.merchant,
+      product.dto.campaignLabel,
+      "sanal sipariş",
+      "simülasyon",
+      "gerçek ödeme yok",
+    ]
+      .filter(Boolean)
+      .join(" ");
+
+    productData.push({
+      categoryId: category.id,
+      brandId: brand.id,
+      name: product.dto.title,
+      slug: product.slug,
+      description,
+      shortDescription,
+      priceCents: product.dto.priceCents,
+      compareAtPriceCents: product.dto.compareAtPriceCents ?? null,
+      rating: new Prisma.Decimal((product.dto.rating ?? 4.4).toFixed(1)),
+      dopamineScore: new Prisma.Decimal((product.dto.dopaminScore ?? 4.1).toFixed(1)),
+      reviewCount: product.dto.reviewCount ?? (product.dto.rating ? 24 : 0),
+      merchantName: product.dto.merchant ?? null,
+      simulatedDeliveryEstimate: product.dto.simulatedDeliveryEstimate ?? null,
+      popularityScore: product.dto.popularityScore ?? 50,
+      stockFeelingLabel: product.dto.stockFeelingLabel ?? null,
+      campaignLabel: product.dto.campaignLabel ?? null,
+      catalogSource: product.dto.catalogSource || "synthetic",
+      isActive: true,
+      searchKeywords,
+    });
+  }
+
+  for (const productChunk of chunk(productData, 500)) {
+    await prisma.product.createMany({
+      data: productChunk,
+      skipDuplicates: true,
+    });
+  }
+
+  const productSlugs = productData.map((product) => product.slug);
+
+  for (const slugChunk of chunk(productSlugs, 1_000)) {
+    await prisma.product.updateMany({
+      where: { slug: { in: slugChunk } },
+      data: {
+        catalogSource: "synthetic",
+        isActive: true,
+      },
+    });
+  }
+
+  const productIdsBySlug = new Map<string, string>();
+
+  for (const slugChunk of chunk(productSlugs, 1_000)) {
+    const records = await prisma.product.findMany({
+      where: { slug: { in: slugChunk } },
+      select: { id: true, slug: true },
+    });
+
+    records.forEach((record) => productIdsBySlug.set(record.slug, record.id));
+  }
+
+  const productIds = Array.from(productIdsBySlug.values());
+
+  for (const idChunk of chunk(productIds, 1_000)) {
+    await prisma.productImage.deleteMany({
+      where: { productId: { in: idChunk } },
+    });
+  }
+
+  const images: Prisma.ProductImageCreateManyInput[] = [];
+
+  for (const product of prepared) {
+    const productId = productIdsBySlug.get(product.slug);
+
+    if (!productId) {
+      continue;
+    }
+
+    images.push(
+      ...createImportImages(product.dto).map((image, index) => ({
+        productId,
+        url: image.url,
+        altText: image.altText,
+        sortOrder: index,
+      })),
+    );
+  }
+
+  for (const imageChunk of chunk(images, 1_000)) {
+    await prisma.productImage.createMany({
+      data: imageChunk,
+    });
+  }
+
+  return {
+    totalRows,
+    importedCount: prepared.length,
+    skippedCount: totalRows - prepared.length + validationErrors.length,
+    duplicateCount,
+    validationErrors,
+  };
 }
 
 async function seedSupportContent() {
@@ -104,6 +417,8 @@ async function seedSupportContent() {
 }
 
 async function main() {
+  assertSafeSeedTarget();
+
   const productCount = readPositiveInteger(
     process.env.DOPLY_SEED_PRODUCT_COUNT,
     DEFAULT_PRODUCT_COUNT,
@@ -115,10 +430,7 @@ async function main() {
     `Starting Doply seed with ${productCount.toLocaleString("tr-TR")} synthetic products (seed: ${seedValue}).`,
   );
 
-  const report = await resetSyntheticDemoCatalog(prisma, {
-    count: productCount,
-    seed: seedValue,
-  });
+  const report = await seedSyntheticCatalogFast(productCount, seedValue);
 
   await seedSupportContent();
 
@@ -130,8 +442,8 @@ async function main() {
   ]);
 
   const summary = {
-    sourceName: report.sourceName,
-    provider: report.provider,
+    sourceName: "Demo kataloğu sıfırlandı ve yeniden üretildi",
+    provider: "synthetic",
     totalRows: report.totalRows,
     importedCount: report.importedCount,
     skippedCount: report.skippedCount,

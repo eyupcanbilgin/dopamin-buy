@@ -2,6 +2,7 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { SlidersHorizontal, X } from "lucide-react";
+import Link from "next/link";
 import { Fragment, type ReactNode } from "react";
 import { useEffect, useMemo, useState } from "react";
 
@@ -18,6 +19,11 @@ type ProductListingProps = {
   showCategoryFilter?: boolean;
   sidebarAdSlot?: ReactNode;
   midFeedAdSlot?: ReactNode;
+  totalCount?: number;
+  currentPage?: number;
+  pageSize?: number;
+  totalPages?: number;
+  basePath?: string;
 };
 
 type SortKey = "popular" | "price-asc" | "price-desc" | "rating" | "discount";
@@ -46,6 +52,11 @@ export function ProductListing({
   showCategoryFilter = true,
   sidebarAdSlot,
   midFeedAdSlot,
+  totalCount,
+  currentPage = 1,
+  pageSize,
+  totalPages = 1,
+  basePath,
 }: ProductListingProps) {
   const [category, setCategory] = useState(initialCategory);
   const [priceBand, setPriceBand] = useState<PriceBand>("all");
@@ -94,6 +105,15 @@ export function ProductListing({
     />
   );
   const midFeedInsertionIndex = Math.min(8, Math.max(0, visibleProducts.length - 1));
+  const catalogTotal = totalCount ?? products.length;
+  const pagination =
+    basePath && pageSize && totalPages > 1
+      ? {
+          basePath,
+          pageSize,
+          totalPages,
+        }
+      : null;
 
   return (
     <div className="grid gap-6 lg:grid-cols-[272px_1fr]">
@@ -108,9 +128,12 @@ export function ProductListing({
         <div className="mb-4 flex flex-col gap-3 rounded-lg border bg-card p-4 shadow-card sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-sm font-semibold text-navy">
-              {visibleProducts.length.toLocaleString("tr-TR")} ürün gösteriliyor
+              Bu sayfada {visibleProducts.length.toLocaleString("tr-TR")} ürün
             </p>
-            <p className="mt-1 text-xs text-muted-foreground">Filtreleri dilediğin gibi sakinleştir.</p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Toplam {catalogTotal.toLocaleString("tr-TR")} ürünlük katalogda sayfa{" "}
+              {currentPage.toLocaleString("tr-TR")} / {Math.max(1, totalPages).toLocaleString("tr-TR")}.
+            </p>
           </div>
           <div className="flex gap-2">
             <Button
@@ -177,6 +200,16 @@ export function ProductListing({
             </Button>
           </div>
         )}
+
+        {pagination ? (
+          <PaginationControls
+            basePath={pagination.basePath}
+            currentPage={currentPage}
+            pageSize={pagination.pageSize}
+            totalPages={pagination.totalPages}
+            totalCount={catalogTotal}
+          />
+        ) : null}
       </section>
 
       <AnimatePresence>
@@ -218,6 +251,62 @@ export function ProductListing({
       </AnimatePresence>
     </div>
   );
+}
+
+function PaginationControls({
+  basePath,
+  currentPage,
+  pageSize,
+  totalPages,
+  totalCount,
+}: {
+  basePath: string;
+  currentPage: number;
+  pageSize: number;
+  totalPages: number;
+  totalCount: number;
+}) {
+  const previousPage = Math.max(1, currentPage - 1);
+  const nextPage = Math.min(totalPages, currentPage + 1);
+
+  return (
+    <nav
+      className="mt-5 flex flex-col gap-3 rounded-lg border bg-card p-4 shadow-card sm:flex-row sm:items-center sm:justify-between"
+      aria-label="Ürün sayfaları"
+    >
+      <p className="text-sm text-muted-foreground">
+        {totalCount.toLocaleString("tr-TR")} üründen sayfa{" "}
+        {currentPage.toLocaleString("tr-TR")} / {totalPages.toLocaleString("tr-TR")}
+      </p>
+      <div className="flex gap-2">
+        <Button asChild variant="outline" aria-disabled={currentPage <= 1}>
+          <Link
+            href={createPageHref(basePath, previousPage, pageSize)}
+            tabIndex={currentPage <= 1 ? -1 : undefined}
+            className={currentPage <= 1 ? "pointer-events-none opacity-50" : undefined}
+          >
+            Önceki
+          </Link>
+        </Button>
+        <Button asChild variant="outline" aria-disabled={currentPage >= totalPages}>
+          <Link
+            href={createPageHref(basePath, nextPage, pageSize)}
+            tabIndex={currentPage >= totalPages ? -1 : undefined}
+            className={currentPage >= totalPages ? "pointer-events-none opacity-50" : undefined}
+          >
+            Sonraki
+          </Link>
+        </Button>
+      </div>
+    </nav>
+  );
+}
+
+function createPageHref(basePath: string, page: number, pageSize: number) {
+  const params = new URLSearchParams();
+  params.set("page", String(page));
+  params.set("pageSize", String(pageSize));
+  return `${basePath}?${params.toString()}`;
 }
 
 function FilterControls({

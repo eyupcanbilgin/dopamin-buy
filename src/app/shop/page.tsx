@@ -15,9 +15,16 @@ import { getPublicAdSlot } from "@/lib/ad-server";
 import {
   getCatalogCategories,
   getCatalogFeaturedProducts,
+  getCatalogProductPage,
   getCatalogProducts,
 } from "@/lib/catalog-db";
 import { buildBreadcrumbJsonLd, buildCategoryCollectionJsonLd, buildMetadata } from "@/lib/seo";
+
+const PUBLIC_PRODUCT_PAGE_SIZE = 48;
+
+type ShopPageProps = {
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+};
 
 export const metadata: Metadata = buildMetadata({
   title: "Sanal Mağaza | Harcamadan keşfet",
@@ -29,25 +36,30 @@ export const metadata: Metadata = buildMetadata({
 
 export const dynamic = "force-dynamic";
 
-export default async function ShopPage() {
-  const [featured, catalogProducts, catalogCategories, homepageAdSlot, sidebarAdSlot] = await Promise.all([
+export default async function ShopPage({ searchParams }: ShopPageProps) {
+  const resolvedSearchParams = await searchParams;
+  const page = readSearchNumber(resolvedSearchParams?.page, 1);
+  const pageSize = readSearchNumber(resolvedSearchParams?.pageSize, PUBLIC_PRODUCT_PAGE_SIZE);
+  const [featured, railProducts, productPage, catalogCategories, homepageAdSlot, sidebarAdSlot] = await Promise.all([
     getCatalogFeaturedProducts(),
     getCatalogProducts(240),
+    getCatalogProductPage({ page, pageSize }),
     getCatalogCategories(),
     getPublicAdSlot("homepage-banner"),
     getPublicAdSlot("sidebar-desktop"),
   ]);
-  const trendingProducts = [...catalogProducts]
+  const listingProducts = productPage.products;
+  const trendingProducts = [...railProducts]
     .sort((a, b) => (b.popularityScore ?? b.reviewCount) - (a.popularityScore ?? a.reviewCount))
     .slice(0, 8);
-  const priceDropProducts = catalogProducts
+  const priceDropProducts = railProducts
     .filter((product) => product.compareAtPrice)
     .sort((a, b) => (b.discountPercentage ?? 0) - (a.discountPercentage ?? 0))
     .slice(0, 8);
-  const mostAddedProducts = [...catalogProducts]
+  const mostAddedProducts = [...railProducts]
     .sort((a, b) => b.reviewCount - a.reviewCount)
     .slice(0, 8);
-  const lateNightProducts = catalogProducts
+  const lateNightProducts = railProducts
     .filter((product) =>
       ["teknoloji", "kozmetik-bakim", "ev-yasam", "kitap-hobi", "kirtasiye"].includes(
         product.category,
@@ -68,11 +80,11 @@ export default async function ShopPage() {
             description:
               "Gerçek satış veya teslimat oluşturmayan alışveriş simülasyonu vitrini.",
             path: "/shop",
-            products: catalogProducts,
+            products: listingProducts,
           }),
         ]}
       />
-      <HeroCarousel products={featured.length > 0 ? featured : catalogProducts} />
+      <HeroCarousel products={featured.length > 0 ? featured : listingProducts} />
       <BrowsingUrgeCheckIn />
       <section className="container py-5">
         <AdSlot
@@ -204,11 +216,16 @@ export default async function ShopPage() {
         <SectionHeader
           eyebrow="Tüm ürünler"
           title="Katalogda gez"
-          description={`${catalogProducts.length.toLocaleString("tr-TR")} ürün gösteriliyor. Filtrele, sırala, listeye al veya sepete ekle.`}
+          description={`${productPage.totalCount.toLocaleString("tr-TR")} ürünlük katalogdan ${listingProducts.length.toLocaleString("tr-TR")} ürün gösteriliyor.`}
         />
         <ProductListing
-          products={catalogProducts}
+          products={listingProducts}
           categories={catalogCategories}
+          totalCount={productPage.totalCount}
+          currentPage={productPage.page}
+          pageSize={productPage.pageSize}
+          totalPages={productPage.totalPages}
+          basePath="/shop"
           sidebarAdSlot={
             <AdSlot
               placement="sidebar-desktop"
@@ -222,4 +239,10 @@ export default async function ShopPage() {
       </section>
     </>
   );
+}
+
+function readSearchNumber(value: string | string[] | undefined, fallback: number) {
+  const raw = Array.isArray(value) ? value[0] : value;
+  const parsed = Number(raw);
+  return Number.isFinite(parsed) && parsed > 0 ? Math.floor(parsed) : fallback;
 }

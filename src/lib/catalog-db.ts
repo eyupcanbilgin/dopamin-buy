@@ -17,6 +17,9 @@ import { getPrisma } from "@/lib/prisma";
 import { getSafeProductGallery } from "@/lib/product-image";
 import { SYNTHETIC_CATEGORY_TAXONOMY } from "@/lib/synthetic-catalog";
 
+const DEFAULT_PUBLIC_PAGE_SIZE = 48;
+const MAX_PUBLIC_PAGE_SIZE = 96;
+
 type ProductWithRelations = Prisma.ProductGetPayload<{
   include: {
     brand: true;
@@ -28,6 +31,21 @@ type ProductWithRelations = Prisma.ProductGetPayload<{
     };
   };
 }>;
+
+export type CatalogProductPage = {
+  products: Product[];
+  totalCount: number;
+  totalPages: number;
+  page: number;
+  pageSize: number;
+  isFallback: boolean;
+};
+
+export type CatalogProductPageOptions = {
+  page?: number;
+  pageSize?: number;
+  categorySlug?: string;
+};
 
 export async function getCatalogCategories(): Promise<Category[]> {
   return withCatalogFallback(async () => {
@@ -63,17 +81,8 @@ export async function getCatalogCategoryBySlug(slug: string): Promise<Category |
 }
 
 export async function getCatalogProducts(limit = 120): Promise<Product[]> {
-  return withCatalogFallback(async () => {
-    const prisma = getPrisma();
-    const records = await prisma.product.findMany({
-      where: { isActive: true },
-      include: productInclude,
-      orderBy: [{ popularityScore: "desc" }, { updatedAt: "desc" }, { name: "asc" }],
-      take: limit,
-    });
-
-    return records.length > 0 ? records.map(mapPrismaProduct) : fallbackProducts;
-  }, fallbackProducts);
+  const page = await getCatalogProductPage({ page: 1, pageSize: limit });
+  return page.products;
 }
 
 export async function getCatalogFeaturedProducts(): Promise<Product[]> {
@@ -82,20 +91,54 @@ export async function getCatalogFeaturedProducts(): Promise<Product[]> {
 }
 
 export async function getCatalogProductsByCategory(slug: string, limit = 120): Promise<Product[]> {
+  const page = await getCatalogProductPage({ page: 1, pageSize: limit, categorySlug: slug });
+  return page.products;
+}
+
+export async function getCatalogProductPage({
+  page = 1,
+  pageSize = DEFAULT_PUBLIC_PAGE_SIZE,
+  categorySlug,
+}: CatalogProductPageOptions = {}): Promise<CatalogProductPage> {
+  const safePage = sanitizePage(page);
+  const safePageSize = sanitizePageSize(pageSize);
+  const fallback = createFallbackProductPage({
+    page: safePage,
+    pageSize: safePageSize,
+    categorySlug,
+  });
+
   return withCatalogFallback(async () => {
     const prisma = getPrisma();
+    const where: Prisma.ProductWhereInput = {
+      isActive: true,
+      ...(categorySlug ? { category: { slug: categorySlug } } : {}),
+    };
+    const totalCount = await prisma.product.count({ where });
+
+    if (totalCount === 0 && !categorySlug) {
+      return fallback;
+    }
+
+    const totalPages = Math.max(1, Math.ceil(totalCount / safePageSize));
+    const clampedPage = Math.min(safePage, totalPages);
     const records = await prisma.product.findMany({
-      where: {
-        isActive: true,
-        category: { slug },
-      },
+      where,
       include: productInclude,
       orderBy: [{ popularityScore: "desc" }, { updatedAt: "desc" }, { name: "asc" }],
-      take: limit,
+      skip: (clampedPage - 1) * safePageSize,
+      take: safePageSize,
     });
 
-    return records.map(mapPrismaProduct);
-  }, getFallbackProductsByCategory(slug));
+    return {
+      products: records.map(mapPrismaProduct),
+      totalCount,
+      totalPages,
+      page: clampedPage,
+      pageSize: safePageSize,
+      isFallback: false,
+    };
+  }, fallback);
 }
 
 export async function getCatalogProductBySlug(slug: string): Promise<Product | undefined> {
@@ -175,4 +218,40 @@ async function withCatalogFallback<T>(callback: () => Promise<T>, fallback: T): 
   } catch {
     return fallback;
   }
+}
+
+function createFallbackProductPage({
+  page,
+  pageSize,
+  categorySlug,
+}: {
+  page: number;
+  pageSize: number;
+  categorySlug?: string;
+}): CatalogProductPage {
+  const source = categorySlug ? getFallbackProductsByCategory(categorySlug) : fallbackProducts;
+  const totalPages = Math.max(1, Math.ceil(source.length / pageSize));
+  const safePage = Math.min(page, totalPages);
+  const start = (safePage - 1) * pageSize;
+
+  return {
+    products: source.slice(start, start + pageSize),
+    totalCount: source.length,
+    totalPages,
+    page: safePage,
+    pageSize,
+    isFallback: true,
+  };
+}
+
+function sanitizePage(value: number) {
+  return Number.isFinite(value) && value > 0 ? Math.floor(value) : 1;
+}
+
+function sanitizePageSize(value: number) {
+  if (!Number.isFinite(value)) {
+    return DEFAULT_PUBLIC_PAGE_SIZE;
+  }
+
+  return Math.min(MAX_PUBLIC_PAGE_SIZE, Math.max(12, Math.floor(value)));
 }
